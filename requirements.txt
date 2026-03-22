@@ -1,0 +1,20 @@
+hatchling
+
+# Backend
+fastapi
+uvicorn
+gunicorn
+redis
+
+# AI
+ultralytics
+# boxmot
+
+# Validations
+pydantic
+pydantic_settings
+ruff
+mypy
+pytest
+structlog
+

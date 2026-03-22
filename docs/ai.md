@@ -1,0 +1,26 @@
+## Multi tracking systems
+* https://github.com/mikel-brostrom/boxmot
+* https://developer.nvidia.com/deepstream-sdk
+
+* https://www.cvat.ai/resources/blog/top-ai-models-video-tracking
+
+The ides for now, We have created some AI models, and we can use it in two ways
+* for 2d camera status-
+    * Detect fire or any danger in the place
+    * Draw the human in the 2d dashboard. (Detection and Depth)
+
+* For 2d map
+    * Car accedents or crows to close the road
+    * Path finding with shortest path. 
+
+Keep it simple mate, 
+* Detectoins, only People, fire and Accident or crowd. 
+* Show red camera when all of these being detected, but people, show real place. 
+* For map, Close the road, and path finding, Publish the project after the 2d dashboard, then work on the 2d map. 
+
+Make sure you hanlde memory correctly, like to emptry torch cache when required, check it further later, `torch.cuda.empty_cache()`
+
+https://colab.research.google.com/drive/1WIXVjOfResUDBX9HfXn7fMSxIWogRaqL?usp=sharing
+
+
+The model profiler link - https://app.clear.ml/projects/bffe65b5fe1649dd9d202e181ba92fe0/experiments/f57871573c9d4d969dd5867004857d99/output/execution

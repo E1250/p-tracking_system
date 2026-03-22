@@ -1,0 +1,8 @@
+{
+    "name": "Tracking System",
+    "image": "nvcr.io/nvidia/pytorch:26.01-py3",
+    "runArgs": [
+        "--gpus", "all",  // Enabling GPU access.
+        "--shm-size=8g"   // Setting shared memory size.
+    ]
+}

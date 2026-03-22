@@ -1,0 +1,43 @@
+import asyncio
+import websockets
+import cv2 as cv
+
+async def test_websocket(camera_id:str="test_camera_id"):
+    # Don't forget to add the camera id. or it will broke.
+    uri = f"ws://127.0.0.1:8000/detectors/stream/{camera_id}"
+    loop = asyncio.get_running_loop()
+
+    try:
+        async with websockets.connect(uri) as websocket:
+            # The best way to send the image to the backend, is by encoding and decoding it, 
+            # As it will still contains its details like the shape, 
+            # otherwide, you will always need the image shape to decode again, which is not good at all. 
+            
+            while True:
+
+                # Wrapping parts that might take abit long time to avoid parallel blocking. 
+                def load_encode():
+                    # Loading the image.
+                    image = cv.imread(r"G:\MyComputer\Workspace\Projects\gp-tracking-dashboard\tracking_dashboard\ai\dummy_data\black tesla car.png")
+                    # Encode the image and send to socket
+                    _, encoded_image = cv.imencode(".jpg", image)
+
+                    return encoded_image
+                
+                encoded_image = await loop.run_in_executor(None, load_encode)
+                await websocket.send(encoded_image.tobytes())  # Sending image as metadata bytes. 
+                
+                # Waiting for the server socket response.
+                response = await websocket.recv() # Note that this blocks the thread until receiving a value.
+                print(response)
+
+                # trying to test under small amount of frames.
+                await asyncio.sleep(2)
+
+    except Exception as e:
+        print(e)
+
+
+if __name__ == "__main__":
+    # We use this to enable async and await in our functions. 
+    asyncio.run(test_websocket())

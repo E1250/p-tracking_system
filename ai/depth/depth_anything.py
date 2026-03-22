@@ -1,0 +1,50 @@
+from ai.depth.depth_anything_v2.depth_anything_v2.dpt import DepthAnythingV2
+
+import torch
+from pathlib import Path
+import cv2 as cv
+from typing import Literal
+import numpy
+from ai.constants import DEPTH_MODEL_CONFIG
+
+class DepthAnything:
+    def __init__(self, 
+        encoder: Literal["vits", "vitb", "vitl", "vitg"], 
+        depth_model_path:Path | str, 
+        DEVICE:Literal["cpu", "cuda", "mps"] = "cpu"
+        ):
+        self.__model_config = DEPTH_MODEL_CONFIG
+        self.model = DepthAnythingV2(**self.__model_config[encoder])
+        self.model.load_state_dict(torch.load(depth_model_path, map_location=DEVICE))
+        self.model = self.model.to(DEVICE).eval()
+
+    def depth(self, frame) -> numpy.ndarray:
+        """
+        Getting the depth of the frame. 
+        input: 
+            frame as a file path not a numpy array. 
+        return:
+            depth as an image
+        """
+        raw_img = cv.imread(frame)
+
+        # infer_image preprocess the input to match the internal requirements, then output it again with the original shape..
+        depth = self.model.infer_image(raw_img)
+        return depth
+
+    def calculate_depth(self, frame, points):
+        """
+        Calculate and return the depth of a specific box or point
+        input: 
+            frame as numpy array and not a path
+        return:
+            depth as a value : Float
+        """
+        depth = self.model.infer_image(frame)
+
+        
+        depth_values = []
+        for point in points:
+            depth_values.append(depth[point[1]][point[0]].item())
+
+        return depth_values

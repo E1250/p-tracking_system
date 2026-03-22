@@ -1,0 +1,7 @@
+# Note that it ignore files in .gitignore by default.
+[tool.ruff]
+exclude = [
+    "ai/Depth-Anything-V2",
+    "playground.py",
+    "playground.ipynb"
+]
