@@ -151,3 +151,8 @@ after really suffering here to be able to access a module from another folder, a
         "PYTHONPATH": "${workspaceFolder}"
     }
 ```
+
+
+todays also i learned some great thing, something called Git subtree, which i use to send only a sub folder from this git to my hugging face git to store and deploy the backend, 
+you add the url like this - `git remote add space https://huggingface.co/spaces/e1250/your-space-name`
+and then push like this - `git subtree push --prefix=backend space main`

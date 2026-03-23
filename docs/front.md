@@ -53,3 +53,5 @@ it took some time for me to realize. but i am good now, heeh. move to `tsx` mate
 
 After tons of pain in the nech due to trying to modify things in the immutable lists, or as mentioned before, Deeply nested immutable updates. i just found a helper, `immer` js package to help further with this. 
 Note that immer is also sensitive to returns, make sure you use always `{}` after `=>`. Curly braces {} every time with Immer. No exceptions.
+
+This is the dashboard link on vercel - https://p-tracking-system-y2dv.vercel.app/
