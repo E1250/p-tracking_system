@@ -117,12 +117,17 @@ function FloorPlanEditor() {
     }
   }
 
+  const handleBackgroundUpload = async (e) => {
+    const bg = await handleUpload(e)
+    setFloor(produce(prev => {prev[currentFloorIdx].bgURL = bg}))
+  }
+
   return (
     <>
       <h2 style={{textAlign: "center"}}> Tracking Dashboard </h2>
       {mode !== "view" && <h5 style={{textAlign:"center", color:"gray"}}>Please Press `Esc` to Exit the current mode of {currentFloor.rooms.at(selectedRoomIdx)?.id}</h5>} 
       
-      <input type="file" accept="image/*" onChange={(e) => setFloor(produce(prev => {prev[currentFloorIdx].bgURL = handleUpload(e)}))} title='Uploading 2D Floor Plane' style={{display:"none"}} ref={uploadFloorBGRef}/> 
+      <input type="file" accept="image/*" onChange={(e) => handleBackgroundUpload} title='Uploading 2D Floor Plane' style={{display:"none"}} ref={uploadFloorBGRef}/> 
       <input type="file" accept=".json" onChange={(e) => importFloors(e, setFloor)} title='Import Floors' style={{display:"none"}} ref={importFloorsRef}/> 
 
       <Stage 

@@ -99,7 +99,6 @@ async def websocket_detect(websocket: WebSocket, camera_id:str):
             # Note that JSONResponse doesn't work here, as it is for HTTP
             await websocket.send_json({"status": 200, "camera_id": camera_id})
 
-
     except WebSocketDisconnect:
         logger.warn(f"Client ID >>{camera_id}<< Disconnected Normally...")
         traceback.print_exc()  # This one is actually really better, it shows more details about the issue happened. 
@@ -112,7 +111,6 @@ async def websocket_detect(websocket: WebSocket, camera_id:str):
         await websocket.close()
     finally:
         active_cameras.dec()
-
 
 
 # Uncomment this when needed, It is the same but using HTTP, which is Request Response only. could be used for testing. 

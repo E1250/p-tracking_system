@@ -55,3 +55,15 @@ After tons of pain in the nech due to trying to modify things in the immutable l
 Note that immer is also sensitive to returns, make sure you use always `{}` after `=>`. Curly braces {} every time with Immer. No exceptions.
 
 This is the dashboard link on vercel - https://p-tracking-system-y2dv.vercel.app/
+
+
+It was suggested that i use version control like this,
+Common types:
+
+feat — new feature
+fix — bug fix
+refactor — restructuring, no behavior change
+chore — config, tooling, CI
+docs — documentation only 
+
+mention the type: more details about it. 

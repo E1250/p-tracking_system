@@ -1,7 +1,6 @@
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
-import asyncio
-
 from backend.api.routers.metrics import active_dashboards 
+import asyncio
 
 router = APIRouter()
 

@@ -1,3 +1,6 @@
+
+
+
 TODO
 - [] Make sure in AI you have.
     * Detection (Person, Fire or a danger, Accident, Crowd)
