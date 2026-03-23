@@ -4,7 +4,7 @@ from ultralytics import YOLO
 from pathlib import Path
 from typing import List
 from domain.detector import Detector
-from ai.constants import YOLOExportFormats
+from ai.utils.constants import YOLOExportFormats
 
 class YOLO_Detector(Detector):
     def __init__(self, model_path:Path):

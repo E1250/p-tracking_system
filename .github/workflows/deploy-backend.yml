@@ -1,0 +1,31 @@
+name: Deploy Tracking System Backend to HF
+
+# Trigger - When you push files in branch main, and the files being added to backend folder.
+on: 
+  push:
+    branches: [main]
+    paths: 
+      - "backend/**"
+
+# Job - the machine or env to run this code.
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    # steps - Download repo code into machine to work with.
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # - fetch full git history
+      
+      - name: Push backend to HF
+        env: 
+          HF-TOKEN: ${{secrets.HF_TOKEN}}
+          
+          # git config --global user.email "deploy@github.com"
+          # git config --global user.name "Github ACtions"
+        run: |
+          git remote add space https://huggingface.co/spaces/e1250/tracking_system_backend
+          git subtree push --prefix=backend space main
+          

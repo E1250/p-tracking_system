@@ -11,7 +11,6 @@ from backend.api.routers import health
 from contextlib import asynccontextmanager
 from infra.logger_structlog import StructLogger
 import asyncio
-from huggingface_hub import hf_hub_download
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

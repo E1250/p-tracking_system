@@ -24,3 +24,6 @@ https://colab.research.google.com/drive/1WIXVjOfResUDBX9HfXn7fMSxIWogRaqL?usp=sh
 
 
 The model profiler link - https://app.clear.ml/projects/bffe65b5fe1649dd9d202e181ba92fe0/experiments/f57871573c9d4d969dd5867004857d99/output/execution
+
+
+so the best practise for this, you upload your models on HF, Each model must have its own HF repo model, and its info, but you can add more than one version of the same model under the same repo. ex. YOLOs, YOLOm, YOLOl at one repo. and mention the version in the pull to fetch the correct one. 

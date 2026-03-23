@@ -9,6 +9,7 @@ DEVICE = 'cuda' if torch.cuda.is_available() else 'mps' if torch.backends.mps.is
 image_path = r"G:\MyComputer\Workspace\Projects\gp-tracking-dashboard\tracking_dashboard\ai\dummy_data\black tesla car.png"
 depth_model_path = config.depth.model_path
 
+
 depth_anything = DepthAnything(
     DEVICE=DEVICE,
     depth_model_path=depth_model_path,
