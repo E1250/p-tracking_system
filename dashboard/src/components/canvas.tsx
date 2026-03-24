@@ -1,9 +1,21 @@
 import useImage from "use-image"
 import {Image as KonvaImage} from "react-konva"
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
-export function Background({url, width, height}){
-  const [image] = useImage(url)
+export function FloorBackground({bgURL, width, height}){
+  
+  const [image, setImage] = useState<HTMLImageElement | null>(null)
+  
+  useEffect(() => {
+    if (!bgURL) return
+
+    const img = new window.Image()
+    img.src = bgURL
+    img.onload = () => setImage(img)
+  }, [bgURL])
+
+  if (!image) return null
+
   return (
     <KonvaImage 
       image={image}

@@ -19,3 +19,4 @@ export function angleTo(fromPoint: Node, toPoint: Node):number{
    */
   return Math.atan2(toPoint.y - fromPoint.y, toPoint.x - fromPoint.x) * (180 / Math.PI)
 }
+

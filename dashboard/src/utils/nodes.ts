@@ -69,6 +69,32 @@ export function closestPointOnSegment(P:Node, A:Node, B:Node){
     return {point, t}
 }
 
+export function isOnEdge(a:Node, b:Node, point:Node){
+    /**
+     * Is this camera point sitting on the line segment between a and b
+     * This  is the question that this function is trying to answer
+     * 
+     */
+    
+
+    // Direction vector of a to b. 
+    const ab = {x: b.x - a.x, y: b.y - a.y}
+    // Direction vector of a to point 
+    const ap = {x: point.x - a.x, y: point.y - a.y}
+
+    // These two lines are to check if the point is really on the line.
+    // const cross = ab.x * ap.y - ab.y * ap.x
+    // const thresh = 0.01
+    // if (Math.abs(cross) > thresh) return false
+
+    const dot = ap.x * ab.x + ap.y * ab.y
+    const lenSq = ab.x * ab.x + ab.y * ab.y
+
+    // Confirming the point is behind a and beyond b
+    // console.log(dot >= 2 && dot <= lenSq)
+    return dot >= 0 && dot <= lenSq
+  }
+
 export function findClosestEdgePoint(cursor: Node, nodes: Node[], threshold = 0.05){
     if (nodes.length < 2) return null
 

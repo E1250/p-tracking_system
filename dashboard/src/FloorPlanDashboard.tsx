@@ -4,20 +4,22 @@ import {produce} from 'immer'
 
 // Components
 import {IconButton} from './components/buttons';
-import {Background} from './components/canvas';
+import {FloorBackground} from './components/canvas';
 import {EdgeNode, CameraNode, CircleNode} from './components/graph'; 
 
 // Interfaces
 import {Node, Room, Floor, EditorMode} from "./types/graph";
 
 import { angleTo, lerp } from './utils/equations';
-import { isTooClose, alignedLine, findClosestEdgePoint } from './utils/nodes';
+import { isTooClose, alignedLine, findClosestEdgePoint, isOnEdge } from './utils/nodes';
 import {saveFloorsState, loadFloorsState, importFloors, exportFloors, clearFloorState} from './utils/storage'
 import { handleUpload } from './utils/functions';
 
 // CSS
 import './design.css'
 import {Assets} from "./assets/index"
+import { ShortcutsPopup } from './components/popups';
+import { useCameraStream } from './hooks/useCameraStream';
 
 function FloorPlanEditor() {
   // This line is going to try to load the data from internal storage, if it didn't work, it is gonig to return the fallback (test or dummy data here. )
@@ -28,6 +30,8 @@ function FloorPlanEditor() {
   const [mode, setMode] = useState<EditorMode>("view")
   const [isHovering, setHovering] = useState<boolean>(false)
   const [hoveringMousePos, setHoveringMousePos] = useState({x:0, y:0, angle:0})
+
+  const [showShortcuts, setShowShortcuts] = useState(false)
   
   // Refs
   const uploadFloorBGRef = useRef<HTMLInputElement>(null)
@@ -35,9 +39,22 @@ function FloorPlanEditor() {
   const stageRef = useRef<Konva.Stage>(null)
   let currentFloor = floors[currentFloorIdx]
   let currentRoomNodes = currentFloor.rooms.at(selectedRoomIdx)?.nodes
-  
+  const camerasStream = useCameraStream("ws://127.0.0.1:8000/dashboard/stream")
+
   // TODO, Test this here, you ight need to set
-  const popNode = () => setFloor(produce(prev => {prev[currentFloorIdx].rooms.at(selectedRoomIdx)?.nodes.pop()}))
+  const popNode = () => {
+    setFloor(produce(prev => {
+      const room = prev[currentFloorIdx].rooms[selectedRoomIdx]
+      const nodes = room.nodes
+
+      if (nodes.length >= 2){
+        const a = nodes[nodes.length - 2]
+        const b = nodes[nodes.length - 1]
+
+        room.cameras = room.cameras.filter(camera => !isOnEdge(a, b, camera))
+      } 
+      nodes.pop()
+    }))}
   const popCamera = () => setFloor(produce(prev => {prev[currentFloorIdx].rooms.at(selectedRoomIdx)?.cameras.pop()}))
   
   useEffect(() => {
@@ -61,7 +78,6 @@ function FloorPlanEditor() {
   })
   
   const handleStageClick = (e) => {
-    
     const button = e.evt.button;
     if (button === 0){  // Left click
       // Check if there is any other close node, If so, Don't create dublicates.
@@ -70,7 +86,8 @@ function FloorPlanEditor() {
       if (mode === "draw"){
 
         // The new point must align with the old one. 90Deg
-        if (currentRoomNodes.length !== 0) newNodePos = alignedLine({x:currentRoomNodes.at(-1).x, y:currentRoomNodes.at(-1).y}, newNodePos)
+        console.log(currentRoomNodes)
+        if (currentRoomNodes?.length !== 0) newNodePos = alignedLine({x:currentRoomNodes.at(-1).x, y:currentRoomNodes.at(-1).y}, newNodePos)
          
         // Check if the current point is close to any other points
         if(isTooClose(newNodePos, currentRoomNodes)){
@@ -91,6 +108,7 @@ function FloorPlanEditor() {
     }else if (button === 2){  // Right click
       if (mode === "draw"){
         popNode()
+        // TODO remove also the camera related to this node.
         console.log("Node has been removed")
       }else if(mode === "camera"){
         popCamera()
@@ -119,16 +137,29 @@ function FloorPlanEditor() {
 
   const handleBackgroundUpload = async (e) => {
     const bg = await handleUpload(e)
+    // TODO check this again, i feel a missing thing here.
     setFloor(produce(prev => {prev[currentFloorIdx].bgURL = bg}))
   }
 
   return (
-    <>
-      <h2 style={{textAlign: "center"}}> Tracking Dashboard </h2>
-      {mode !== "view" && <h5 style={{textAlign:"center", color:"gray"}}>Please Press `Esc` to Exit the current mode of {currentFloor.rooms.at(selectedRoomIdx)?.id}</h5>} 
-      
-      <input type="file" accept="image/*" onChange={(e) => handleBackgroundUpload} title='Uploading 2D Floor Plane' style={{display:"none"}} ref={uploadFloorBGRef}/> 
+    <div style={{}}>
+      <div style={{display: "flex"}}>
+        <div style={{flex: 5}}>
+          <h2 style={{textAlign: "center"}}> Tracking Dashboard </h2>
+          {mode !== "view" && <h5 style={{textAlign:"center", color:"gray"}}>Please Press `Esc` to Exit the current mode of {currentFloor.rooms.at(selectedRoomIdx)?.id}</h5>} 
+        </div>
+        <div style={{display:"flex"}}>
+          <button onClick={() => {setShowShortcuts(true)}}
+          // style={{position: "absolute"}}
+          >
+            i
+          </button>
+        </div>
+      </div>
+      <input type="file" accept="image/*" onChange={(e) => handleBackgroundUpload(e)} title='Uploading 2D Floor Plane' style={{display:"none"}} ref={uploadFloorBGRef}/> 
       <input type="file" accept=".json" onChange={(e) => importFloors(e, setFloor)} title='Import Floors' style={{display:"none"}} ref={importFloorsRef}/> 
+
+      {showShortcuts && <ShortcutsPopup close={() => setShowShortcuts(false)} />}
 
       <Stage 
       ref={stageRef} 
@@ -139,7 +170,7 @@ function FloorPlanEditor() {
       onMouseMove={handleStageHover}
       >
         <Layer>
-          {currentFloor.bgURL && <Background url={currentFloor.bgURL} width={window.innerWidth} height={window.innerHeight / 1.5} />}
+          {currentFloor.bgURL && <FloorBackground bgURL={currentFloor.bgURL} width={window.innerWidth} height={window.innerHeight / 1.5} />}
         </Layer>
 
         {/* Canvas for Drawing Nodes and Edges */}
@@ -172,7 +203,7 @@ function FloorPlanEditor() {
 
           {currentFloor.rooms.map((polygon, _) => 
             polygon.cameras.map((camera, i) =>
-              <CameraNode pos={camera} icon={Assets.VideoCamera} rotation={camera.angle} key={i} />
+              <CameraNode pos={camera} icon={Assets.VideoCamera} rotation={camera.angle} key={i} cameraData={{hasDanger: true, depthPoints: []}}/>
           ))}
 
           {/* ----- Hovering State ------------ */}
@@ -227,10 +258,13 @@ function FloorPlanEditor() {
           <legend>Modes</legend>
 
           <IconButton label="Draw Mode" onClick={() => {
-            let roomId = prompt("Enter Room Name/ID: ") ?? "Test_654"
-            let room: Room = {id: roomId, cameras: [], nodes:[]}
-            setFloor(produce(prev => {prev[currentFloorIdx].rooms.push(room)}))
-            setSelectedRoomIdx(currentFloor.rooms.length)
+            if (selectedRoomIdx === -1){
+              let roomId = prompt("Enter Room Name/ID: ") ?? "Test_654"
+              let room: Room = {id: roomId, cameras: [], nodes:[]}
+              setFloor(produce(prev => {prev[currentFloorIdx].rooms.push(room)}))
+              setSelectedRoomIdx(currentFloor.rooms.length)
+            }
+            
             console.log(floors)
             console.log(selectedRoomIdx)
             // setFloor(prev => prev.map((floor, i) => {
@@ -253,7 +287,7 @@ function FloorPlanEditor() {
 
         </fieldset>
       </div>
-    </>
+    </div>
   )
 }
 

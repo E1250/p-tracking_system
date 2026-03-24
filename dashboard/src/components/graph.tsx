@@ -38,11 +38,13 @@ export function EdgeNode({nodes, key, color="black"}){
   }
 
 
-export function CameraNode({icon, pos, rotation=0, key, hasDanger}){
+export function CameraNode({icon, pos, rotation=0, key, cameraData={hasDanger: false, depthPoints:[]}}){
   const [image] = useImage(icon)
+
+  cameraData.depthPoints.length !== 0 && console.log(cameraData)
   return (
     <>
-     <StatusMark pos={pos} color={hasDanger ? "red" : "green"} />
+     <StatusMark pos={pos} color={cameraData.hasDanger ? "red" : "green"} />
      <KonvaImage 
       image={image} 
       x={pos.x * window.innerWidth}
