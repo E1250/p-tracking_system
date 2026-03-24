@@ -4,8 +4,8 @@ name: Deploy Tracking System Backend to HF
 on: 
   push:
     branches: [main]
-    # paths: 
-    #   - "backend/**"
+    paths: 
+      - "backend/**"
 
 # Job - the machine or env to run this code.
 jobs:
