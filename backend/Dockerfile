@@ -6,10 +6,11 @@ RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 # Working dir inside the container.
 WORKDIR /app
 
+RUN pip install --no-cache-dir --upgrade pip
+
 # Copies req.txt from local machine into /app inside container.
 COPY requirements.txt .
-
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of files into /app folder.
 COPY . .
