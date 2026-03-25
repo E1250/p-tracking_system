@@ -118,6 +118,44 @@ export function findClosestEdgePoint(cursor: Node, nodes: Node[], threshold = 0.
     return closest
 }
 
+export interface StreamDetections{
+    depth: number
+    xRatio: number
+}
+export function placeDetectionPoint(
+        cameraPos:Node,
+        cameraAngleDeg:number,
+        streamDetections: StreamDetections,
+        roomNodes: Node[]
+    ){
+    // At leasat 3 points
+    if (roomNodes.length < 3) return null
+    
+    // Clippting depthRatio just as validator to be in 0 to 1 ratio.
+    const t = Math.max(0, Math.min(1, streamDetections.depth))
+    const x = Math.max(0, Math.min(1, streamDetections.xRatio))
+
+    let hit = placeDepthPointOnRay(cameraPos, cameraAngleDeg, 1, roomNodes)
+    if (!hit) return null
+
+    const isHorizontal = cameraAngleDeg === 0 || cameraAngleDeg === 180
+
+    const perpendicularValues = roomNodes.map(n => isHorizontal ? n.y : n.x)
+    const minPerp = Math.min(...perpendicularValues)
+    const maxPerp = Math.max(...perpendicularValues)
+
+    const lateralValue = minPerp + x * (maxPerp - minPerp)
+
+    const wallPoint: Node = isHorizontal
+            ? {x: hit.x, y: lateralValue}
+            : {x: lateralValue, y: hit.y}
+     
+    return {
+        x: lerp(cameraPos.x, wallPoint.x, t),
+        y: lerp(cameraPos.y, wallPoint.y, t)
+    } 
+}
+
 
 export function placeDepthPointOnRay(
     cameraPos:Node,

@@ -2,7 +2,7 @@ import React from "react"
 import { Line, Circle, Image as KonvaImage, Stage, Layer } from "react-konva"
 import useImage from "use-image"
 import { Node } from "../types/graph"
-import { placeDepthPointOnRay } from "../utils/nodes"
+import { placeDepthPointOnRay, placeDetectionPoint, StreamDetections } from "../utils/nodes"
 
 // We created interface here, as this one is for a ui compoenent, and the input must be only one object, which is dict here. 
 interface CircleNodeProps{pos, mode, key, color?:string, onDragEnd?: (e) => void, onSelect?: () => void}
@@ -39,19 +39,21 @@ export function EdgeNode({nodes, key, color="black"}){
   }
 
 
-export function CameraNode({icon, pos, rotation=0, key, cameraData={hasDanger: false, depthPoints:[] as number[]}, roomNodes=[] as Node[]}){
-  const [image] = useImage(icon)
-  let depthPoints:Node[] | null = []
-  console.log("Camera Nodes", cameraData)
-  console.log("Room Nodes", roomNodes)
+export function CameraNode({icon, pos, rotation=0, key, cameraData={hasDanger: false, streamDetections:[] as StreamDetections[]}, roomNodes=[] as Node[]}){
 
-  if (cameraData.depthPoints.length !== 0 && roomNodes.length !== 0) {
-    for (let depth of cameraData.depthPoints){
-      const p = placeDepthPointOnRay(pos, rotation, Number(depth), roomNodes)
-      p !== null && depthPoints.push(p)
-    }
+  const [image] = useImage(icon)
+  let detectionPoints:Node[] | null = []
+  // console.log("Camera Nodes", cameraData)
+  // console.log("Room Nodes", roomNodes)
+
+  // TODO: Just check null here of detections points, and then add dummy values to test on and try again. 
+  if (cameraData.streamDetections.length !==0 && roomNodes.length !== 0) {
+    detectionPoints = cameraData.streamDetections
+    .map((d) => placeDetectionPoint(pos, rotation, d, roomNodes))
+    .filter((p): p is Node => p !== null)
   }
-  console.log(depthPoints)
+
+  // console.log(depthPoints)
   return (
     <>
      <StatusMark pos={pos} color={cameraData.hasDanger ? "red" : "green"} />
@@ -70,7 +72,7 @@ export function CameraNode({icon, pos, rotation=0, key, cameraData={hasDanger: f
       height={50}
       />
 
-      {depthPoints.map((pt, i) => (
+      {detectionPoints.map((pt, i) => (
         <Circle
           key={i}
           x = {pt.x * window.innerWidth}
@@ -82,7 +84,6 @@ export function CameraNode({icon, pos, rotation=0, key, cameraData={hasDanger: f
         />
      ))}
     </>
-   
   )
 }
 export function StatusMark({pos, color="green"}){

@@ -204,12 +204,12 @@ function FloorPlanEditor() {
 
           {currentFloor.rooms.map((polygon, _) => 
             polygon.cameras.map((camera, i) =>
-              <CameraNode pos={camera} icon={Assets.VideoCamera} rotation={camera.angle} key={i} cameraData={{hasDanger: true, depthPoints: [0.5, 0.7, 0.2]}} roomNodes={currentRoomNodes}/>
+              <CameraNode pos={camera} icon={Assets.VideoCamera} rotation={camera.angle} key={i} cameraData={{hasDanger: true, streamDetections: [{depth: 0.9, xRatio:0.1}]}} roomNodes={currentRoomNodes}/>
           ))}
 
           {/* ----- Hovering State ------------ */}
           {isHovering && mode === "draw" && <CircleNode pos={hoveringMousePos} key={-1} mode={mode}/> }
-          {isHovering && mode === "camera" && <CameraNode icon={Assets.VideoCamera} pos={hoveringMousePos} rotation={hoveringMousePos.angle} key={-1} roomNodes={[]}/> }
+          {isHovering && mode === "camera" && <CameraNode icon={Assets.VideoCamera} pos={hoveringMousePos} rotation={hoveringMousePos.angle} key={-1}/> }
           
         </Layer>
       </Stage>
