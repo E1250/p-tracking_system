@@ -100,8 +100,11 @@ function FloorPlanEditor() {
         
       }else if(mode === "camera"){
         if(isTooClose(newNodePos, currentFloor.rooms.at(-1)?.cameras)){return;}
+
+        let cameraId = prompt("Enter Camera ID: ") ?? "Test_camera"
+
         
-        setFloor(produce(prev => {prev[currentFloorIdx].rooms.at(selectedRoomIdx)?.cameras.push({x: newNodePos.x, y:newNodePos.y, angle: hoveringMousePos.angle})}))
+        setFloor(produce(prev => {prev[currentFloorIdx].rooms.at(selectedRoomIdx)?.cameras.push({id: cameraId, x: newNodePos.x, y:newNodePos.y, angle: hoveringMousePos.angle})}))
         console.log("New camera added.")
       }
 
@@ -260,8 +263,8 @@ function FloorPlanEditor() {
 
           <IconButton label="Draw Mode" onClick={() => {
             if (selectedRoomIdx === -1){
-              let roomId = prompt("Enter Room Name/ID: ") ?? "Test_654"
-              let room: Room = {id: roomId, cameras: [], nodes:[]}
+              let cameraName = prompt("Enter Room Name/ID: ") ?? "Room"
+              let room: Room = {id: cameraName, cameras: [], nodes:[]}
               setFloor(produce(prev => {prev[currentFloorIdx].rooms.push(room)}))
               setSelectedRoomIdx(currentFloor.rooms.length)
             }

@@ -97,6 +97,7 @@ export function CameraNode({icon, pos, rotation=0, key, cameraData={hasDanger: f
     </>
   )
 }
+
 export function StatusMark({pos, color="green"}){
   const radious = [60, 45, 30] 
   return (
