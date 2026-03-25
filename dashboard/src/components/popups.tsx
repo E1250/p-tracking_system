@@ -23,9 +23,7 @@ export function ShortcutsPopup({close}: {close: () => void}){
                         <td>Move to View Mode</td>
                     </tr>
                 </tbody>
-
             </table>
-
         </div>
     )
 }

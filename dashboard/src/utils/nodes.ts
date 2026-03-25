@@ -75,24 +75,32 @@ export function isOnEdge(a:Node, b:Node, point:Node){
      * This  is the question that this function is trying to answer
      * 
      */
+     const ON_EDGE_EPS = 0.01
     
+    // // Direction vector of a to b. 
+    // const ab = {x: b.x - a.x, y: b.y - a.y}
+    // // Direction vector of a to point 
+    // const ap = {x: point.x - a.x, y: point.y - a.y}
 
-    // Direction vector of a to b. 
-    const ab = {x: b.x - a.x, y: b.y - a.y}
-    // Direction vector of a to point 
-    const ap = {x: point.x - a.x, y: point.y - a.y}
+    // // These two lines are to check if the point is really on the line.
+    // // const cross = ab.x * ap.y - ab.y * ap.x
+    // // const thresh = 0.01
+    // // if (Math.abs(cross) > thresh) return false
+    // const lenSq = ab.x * ab.x + ab.y * ab.y
+    // if (lenSq === 0) return false
 
-    // These two lines are to check if the point is really on the line.
-    // const cross = ab.x * ap.y - ab.y * ap.x
-    // const thresh = 0.01
-    // if (Math.abs(cross) > thresh) return false
+    // const dot = ap.x * ab.x + ap.y * ab.y
+    // if (dot < 0 || dot > lenSq) return false
 
-    const dot = ap.x * ab.x + ap.y * ab.y
-    const lenSq = ab.x * ab.x + ab.y * ab.y
+    // // Confirming the point is behind a and beyond b
+    // // console.log(dot >= 2 && dot <= lenSq)
+    // const cross = ab.x - ap.y - ab.y * ap.x
+    // const prepDist = Math.abs(cross) / Math.sqrt(lenSq)
+   
+    // return prepDist <= ON_EDGE_EPS
 
-    // Confirming the point is behind a and beyond b
-    // console.log(dot >= 2 && dot <= lenSq)
-    return dot >= 0 && dot <= lenSq
+    const {point: proj} = closestPointOnSegment(point, a, b)
+    return eucleadianDistance(point, proj) <= ON_EDGE_EPS
   }
 
 export function findClosestEdgePoint(cursor: Node, nodes: Node[], threshold = 0.05){

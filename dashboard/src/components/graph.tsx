@@ -5,8 +5,8 @@ import { Node } from "../types/graph"
 import { placeDepthPointOnRay, placeDetectionPoint, StreamDetections } from "../utils/nodes"
 
 // We created interface here, as this one is for a ui compoenent, and the input must be only one object, which is dict here. 
-interface CircleNodeProps{pos, mode, key, color?:string, onDragEnd?: (e) => void, onSelect?: () => void}
-export function CircleNode({pos, mode, key, color="black", onDragEnd, onSelect}: CircleNodeProps){
+interface CircleNodeProps{pos, mode, key, color?:string, onDragEnd?: (e) => void, onSelect?: () => void, isHovering}
+export function CircleNode({pos, mode, key, color="black", onDragEnd, onSelect, isHovering=False}: CircleNodeProps){
   // Note that i transfered x and y to percentages, and i return them back again here. 
   return (
     <Circle
@@ -14,10 +14,10 @@ export function CircleNode({pos, mode, key, color="black", onDragEnd, onSelect}:
       x={pos.x * window.innerWidth}
       y={pos.y * window.innerHeight}
       fill= {color}
-      opacity={key === -1 ? 0.1 : 1}
+      opacity={isHovering ? 0.5 : 1}
       stroke="gray"
       radius={10}
-      draggable={mode === "edit"} // TODO Fix this, also previous nodes in other rooms are draggable, fix this. 
+      // draggable={mode === "edit"} // TODO Fix this, also previous nodes in other rooms are draggable, fix this. 
       onDragEnd={onDragEnd}
       onclick={onSelect}
     />
@@ -39,7 +39,7 @@ export function EdgeNode({nodes, key, color="black"}){
   }
 
 
-export function CameraNode({icon, pos, rotation=0, key, cameraData={hasDanger: false, streamDetections:[] as StreamDetections[]}, roomNodes=[] as Node[]}){
+export function CameraNode({icon, pos, rotation=0, key, isHovering = False, cameraData={hasDanger: false, streamDetections:[] as StreamDetections[]}, roomNodes=[] as Node[]}){
 
   const [image] = useImage(icon)
   let detectionPoints:Node[] | null = []
@@ -52,15 +52,15 @@ export function CameraNode({icon, pos, rotation=0, key, cameraData={hasDanger: f
 
   return (
     <>
-     <StatusMark pos={pos} color={cameraData.hasDanger ? "red" : "green"} />
+     {!isHovering && <StatusMark pos={pos} color={cameraData.hasDanger ? "red" : "green"} />}
           
      <KonvaImage 
       image={image} 
       x={pos.x * window.innerWidth}
       y={pos.y * window.innerHeight}
       alt='CameraNode'
-      key={key+1}
-      opacity={key === -1 ? 0.5 : 1}
+      key={key + 1}
+      opacity={isHovering? 0.5 : 1}
       rotation={rotation}
       offsetX={25}
       offsetY={25}

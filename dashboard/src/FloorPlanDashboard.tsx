@@ -187,32 +187,33 @@ function FloorPlanEditor() {
           {currentFloor.rooms.map((polygon, roomIdx) => 
             polygon.nodes.map((node, idx) => 
               <CircleNode pos={node} mode={mode} key={idx} color={selectedRoomIdx === roomIdx ? "darkblue" : "black"} 
-                onDragEnd={(e) => {
-                      const xNew = e.target.x() / window.innerWidth
-                      const yNew = e.target.y() / window.innerHeight
-                      setFloor(produce(prev => {
-                        prev[currentFloorIdx].rooms[selectedRoomIdx].nodes.map((n, i) => i === idx ? {...n, x: xNew, y:yNew} : n)
-                      }))
-                    }
-                }
-                // onSelect={() => {
-                //   console.log(roomIdx)
-                //   if (mode === "edit")
-                //     setSelectedRoomIdx(roomIdx)
-                //     setMode("draw")
+                // onDragEnd={(e) => {
+                //       const xNew = e.target.x() / window.innerWidth
+                //       const yNew = e.target.y() / window.innerHeight
+                //       setFloor(produce(prev => {
+                //         prev[currentFloorIdx].rooms[selectedRoomIdx].nodes.map((n, i) => i === idx ? {...n, x: xNew, y:yNew} : n)
+                //       }))
                 //     }
                 // }
+                onSelect={() => {
+                  console.log(roomIdx)
+                  if (mode === "edit")
+                    setSelectedRoomIdx(roomIdx)
+                    setMode("draw")
+                    }
+                }
               />
           ))}
 
-          {currentFloor.rooms.map((polygon, _) => 
-            polygon.cameras.map((camera, i) =>
-              <CameraNode pos={camera} icon={Assets.VideoCamera} rotation={camera.angle} key={i} cameraData={{hasDanger: true, streamDetections: [{depth: 0.9, xRatio:0.1}]}} roomNodes={currentRoomNodes}/>
+          {currentFloor.rooms.map((room, _) => 
+            room.cameras.map((camera, i) =>
+              // TODO, this is wrong, i should not pass the currentNodes, but the nodes of the floor this camera on. 
+              <CameraNode pos={camera} icon={Assets.VideoCamera} rotation={camera.angle} key={i} cameraData={{hasDanger: true, streamDetections: [{depth: 0.9, xRatio:0.1}]}} roomNodes={room.nodes}/>
           ))}
 
           {/* ----- Hovering State ------------ */}
-          {isHovering && mode === "draw" && <CircleNode pos={hoveringMousePos} key={-1} mode={mode}/> }
-          {isHovering && mode === "camera" && <CameraNode icon={Assets.VideoCamera} pos={hoveringMousePos} rotation={hoveringMousePos.angle} key={-1}/> }
+          {isHovering && mode === "draw" && <CircleNode pos={hoveringMousePos} key={-1} mode={mode} isHovering="True"/> }
+          {isHovering && mode === "camera" && <CameraNode icon={Assets.VideoCamera} pos={hoveringMousePos} rotation={hoveringMousePos.angle} key={-1} isHovering="True"/> }
           
         </Layer>
       </Stage>
@@ -246,7 +247,7 @@ function FloorPlanEditor() {
                 setFloorIdx(Math.max(0, currentFloorIdx - 1))
                 setSelectedRoomIdx(-1)
                 setMode("view")
-                }} icon={Assets.arrow}  style={{transform:"rotate(180deg)"}}/>
+                }} icon={Assets.arrow}  imgStyle={{transform:"rotate(180deg)"}}/>
               <span style={{textAlign:"center", fontSize:50, alignContent:"center"}}>{currentFloorIdx + 1}-{floors.length}</span>
               <IconButton label="Next Floor" onClick={() => {
                 setFloorIdx(Math.min(floors.length - 1, currentFloorIdx + 1))
@@ -268,16 +269,6 @@ function FloorPlanEditor() {
               setFloor(produce(prev => {prev[currentFloorIdx].rooms.push(room)}))
               setSelectedRoomIdx(currentFloor.rooms.length)
             }
-            
-            console.log(floors)
-            console.log(selectedRoomIdx)
-            // setFloor(prev => prev.map((floor, i) => {
-            //   console.log(floor); 
-            //   return i === currentFloorIdx
-            //   ? {...floor, rooms:[...floor.rooms, room]}
-            //   : floor
-            // }))
-            // TODO replace with validation. 
             setMode("draw")
             }} icon={Assets.drawMode}/>
 
