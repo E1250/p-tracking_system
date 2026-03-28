@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect} from 'react'
+import React, { useState, useRef, useEffect, useMemo} from 'react'
 import { Stage, Layer, Group, Image as KonvaImage} from 'react-konva';
 import {produce} from 'immer'
 
@@ -11,7 +11,7 @@ import {EdgeNode, CameraNode, CircleNode} from './components/graph';
 import {Node, Room, Floor, EditorMode} from "./types/graph";
 
 import { angleTo, lerp } from './utils/equations';
-import { isTooClose, alignedLine, findClosestEdgePoint, isOnEdge } from './utils/nodes';
+import { isTooClose, alignedLine, findClosestEdgePoint, isOnEdge, StreamDetections } from './utils/nodes';
 import {saveFloorsState, loadFloorsState, importFloors, exportFloors, clearFloorState} from './utils/storage'
 import { handleUpload } from './utils/functions';
 
@@ -39,7 +39,8 @@ function FloorPlanEditor() {
   const stageRef = useRef<Konva.Stage>(null)
   let currentFloor = floors[currentFloorIdx]
   let currentRoomNodes = currentFloor.rooms.at(selectedRoomIdx)?.nodes
-  const camerasStream = useCameraStream("ws://127.0.0.1:8000/dashboard/stream")
+  const camerasStream = useCameraStream("ws://127.0.0.1:8000/dashboard/stream") ?? {test_camera_id: {isDanger: false, detection_metadata: []}}
+  console.log("local server connection", camerasStream)
 
   // TODO, Test this here, you ight need to set
   const popNode = () => {
@@ -101,8 +102,8 @@ function FloorPlanEditor() {
       }else if(mode === "camera"){
         if(isTooClose(newNodePos, currentFloor.rooms.at(-1)?.cameras)){return;}
 
-        let cameraId = prompt("Enter Camera ID: ") ?? "Test_camera"
-        if (cameraId !== null){
+        let cameraId = prompt("Enter Camera ID: ")
+        if (cameraId !== null && cameraId !== ""){
           setFloor(produce(prev => {prev[currentFloorIdx].rooms.at(selectedRoomIdx)?.cameras.push({id: cameraId, x: newNodePos.x, y:newNodePos.y, angle: hoveringMousePos.angle})}))
           console.log("New camera added.")
         }
@@ -208,12 +209,14 @@ function FloorPlanEditor() {
           {currentFloor.rooms.map((room, _) => 
             room.cameras.map((camera, i) =>
               // TODO, this is wrong, i should not pass the currentNodes, but the nodes of the floor this camera on. 
-              <CameraNode pos={camera} icon={Assets.VideoCamera} rotation={camera.angle} key={i} cameraData={{hasDanger: true, streamDetections: [{depth: 0.9, xRatio:0.1}]}} roomNodes={room.nodes}/>
+              // <CameraNode pos={camera} icon={Assets.VideoCamera} rotation={camera.angle} key={i} cameraData={{hasDanger: true, detection_metadata: [{depth: 0.9, xRatio:0.1}]}} roomNodes={room.nodes}/>
+              <CameraNode pos={camera} icon={Assets.VideoCamera} rotation={camera.angle} key={i} cameraData={camerasStream["test_camera_id"]} roomNodes={room.nodes}/>
+
           ))}
 
           {/* ----- Hovering State ------------ */}
           {isHovering && mode === "draw" && <CircleNode pos={hoveringMousePos} key={-1} mode={mode} isHovering="True"/> }
-          {isHovering && mode === "camera" && <CameraNode icon={Assets.VideoCamera} pos={hoveringMousePos} rotation={hoveringMousePos.angle} key={-1} isHovering="True"/> }
+          {isHovering && mode === "camera" && <CameraNode icon={Assets.VideoCamera} pos={hoveringMousePos} rotation={hoveringMousePos.angle} key={-1} isHovering="True" /> }
           
         </Layer>
       </Stage>

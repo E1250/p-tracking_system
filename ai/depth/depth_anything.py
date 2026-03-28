@@ -48,6 +48,6 @@ class DepthAnything:
         
         depth_values = []
         for point in points:
-            depth_values.append(depth[point[1]][point[0]].item())
+            depth_values.append((depth[point[1]][point[0]] / depth.max() - depth.min()).item())
 
-        return depth_values, depth.min(), depth.max()
+        return depth_values

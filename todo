@@ -1,2 +1,2 @@
-[ ] Fix removing the line cause removing of a camera, even if it was not on the line. 
+[X] Fix removing the line cause removing of a camera, even if it was not on the line. 
 [ ] some bugs about the setSelectRoomIdx(-1) issues, which better to use null instead. going to work on this later. 

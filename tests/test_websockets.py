@@ -18,7 +18,7 @@ async def test_websocket(camera_id:str="test_camera_id"):
                 # Wrapping parts that might take abit long time to avoid parallel blocking. 
                 def load_encode():
                     # Loading the image.
-                    image = cv.imread(r"G:\MyComputer\Workspace\Projects\gp-tracking-dashboard\tracking_dashboard\ai\dummy_data\black tesla car.png")
+                    image = cv.imread(r"G:\MyComputer\Workspace\Projects\gp-tracking-dashboard\tracking_dashboard\dummy_data\home fire smoke.jpg")
                     # Encode the image and send to socket
                     _, encoded_image = cv.imencode(".jpg", image)
 

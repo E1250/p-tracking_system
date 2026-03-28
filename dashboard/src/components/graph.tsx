@@ -6,7 +6,7 @@ import { placeDepthPointOnRay, placeDetectionPoint, StreamDetections } from "../
 
 // We created interface here, as this one is for a ui compoenent, and the input must be only one object, which is dict here. 
 interface CircleNodeProps{pos, mode, key, color?:string, onDragEnd?: (e) => void, onSelect?: () => void, isHovering}
-export function CircleNode({pos, mode, key, color="black", onDragEnd, onSelect, isHovering=False}: CircleNodeProps){
+export function CircleNode({pos, mode, key, color="black", onDragEnd, onSelect, isHovering=false}: CircleNodeProps){
   // Note that i transfered x and y to percentages, and i return them back again here. 
   return (
     <Circle
@@ -39,23 +39,23 @@ export function EdgeNode({nodes, key, color="black"}){
   }
 
 
-export function CameraNode({icon, pos, rotation=0, key, isHovering = False, cameraData={hasDanger: false, streamDetections:[] as StreamDetections[]}, roomNodes=[] as Node[]}){
+export function CameraNode({icon, pos, rotation=0, key, isHovering=false, cameraData={is_danger: false, detection_metadata:[]} as StreamDetections, roomNodes=[] as Node[]}){
 
   const [image] = useImage(icon)
   let detectionPoints:Node[] | null = []
 
-  if (cameraData.streamDetections.length !==0 && roomNodes.length !== 0) {
-    detectionPoints = cameraData.streamDetections
+  if (cameraData.detection_metadata !==0 && roomNodes.length !== 0) {
+    detectionPoints = cameraData.detection_metadata
     .map((d) => placeDetectionPoint(pos, rotation, d, roomNodes))
     .filter((p): p is Node => p !== null)
   }
 
   return (
     <>
-     {!isHovering && <StatusMark pos={pos} color={cameraData.hasDanger ? "red" : "green"} />}
+     {!isHovering && <StatusMark pos={pos} color={cameraData.is_danger ? "red" : "green"} />}
           
      <KonvaImage 
-      image={image} 
+      image={image}
       x={pos.x * window.innerWidth}
       y={pos.y * window.innerHeight}
       alt='CameraNode'
@@ -76,7 +76,7 @@ export function CameraNode({icon, pos, rotation=0, key, isHovering = False, came
             pt.x * window.innerWidth,
             pt.y * window.innerHeight
           ]}
-          stroke={cameraData.hasDanger ? "red" : "green"}
+          stroke={cameraData.is_danger ? "red" : "green"}
           strokeWidth={1.5}
           dash={[6, 4]}
           opacity={0.5}
@@ -89,7 +89,7 @@ export function CameraNode({icon, pos, rotation=0, key, isHovering = False, came
           x = {pt.x * window.innerWidth}
           y = {pt.y * window.innerHeight}
           radius={8}
-          fill={cameraData.hasDanger ? "red" : "green"}
+          fill={cameraData.is_danger ? "red" : "green"}
           stroke="black"
           opacity={0.9}
         />

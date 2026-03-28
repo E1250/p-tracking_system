@@ -74,21 +74,20 @@ async def websocket_detect(websocket: WebSocket, camera_id:str):
             detections, safety_detection = await asyncio.gather(detection_task, safety_task)
             
             boxes_center = []
+            boxes_center_ratio = []
             for box in detections.detections:
                 print(type(box))
                 xmin, ymin, xmax, ymax = box.xyxy
                 xcenter = (xmax + xmin) / 2
                 ycenter = (ymax + ymin) / 2
                 boxes_center.append((int(xcenter), int(ycenter)))
+                boxes_center_ratio.append(xcenter / image_array.shape[1])
             
-            # print(depth_model)
             depth_points = await loop.run_in_executor(None, run_depth, image_array, boxes_center) if boxes_center else []
-            # depth_points = []
-            # print(depth_points)
-            # print(type(depth_points))
-            # print(boxes_center)
 
-            metadata = CameraMetadata(camera_id=camera_id, is_danger = True if safety_detection else False, depth_points=depth_points)
+            detection_metadata = [{"depth": depth, "xRatio": xRatio} for depth, xRatio in zip(depth_points, boxes_center_ratio)]
+            metadata = CameraMetadata(camera_id=camera_id, is_danger = True if safety_detection else False, detection_metadata=detection_metadata)
+            print(metadata)
             state.camera_metadata[camera_id] = metadata.model_dump()
 
             # Profiling
