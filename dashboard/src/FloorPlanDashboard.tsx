@@ -30,7 +30,7 @@ function FloorPlanEditor() {
   const [mode, setMode] = useState<EditorMode>("view")
   const [isHovering, setHovering] = useState<boolean>(false)
   const [hoveringMousePos, setHoveringMousePos] = useState({x:0, y:0, angle:0})
-
+  
   const [showShortcuts, setShowShortcuts] = useState(false)
   
   // Refs
@@ -209,8 +209,8 @@ function FloorPlanEditor() {
           {currentFloor.rooms.map((room, _) => 
             room.cameras.map((camera, i) =>
               // TODO, this is wrong, i should not pass the currentNodes, but the nodes of the floor this camera on. 
-              // <CameraNode pos={camera} icon={Assets.VideoCamera} rotation={camera.angle} key={i} cameraData={{hasDanger: true, detection_metadata: [{depth: 0.9, xRatio:0.1}]}} roomNodes={room.nodes}/>
-              <CameraNode pos={camera} icon={Assets.VideoCamera} rotation={camera.angle} key={i} cameraData={camerasStream["test_camera_id"]} roomNodes={room.nodes}/>
+              
+              <CameraNode pos={camera} icon={Assets.VideoCamera} rotation={camera.angle} key={i} cameraData={camerasStream[camera.id!]} roomNodes={room.nodes} />
 
           ))}
 

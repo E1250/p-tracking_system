@@ -40,4 +40,4 @@ async def test_websocket(camera_id:str="test_camera_id"):
 
 if __name__ == "__main__":
     # We use this to enable async and await in our functions. 
-    asyncio.run(test_websocket())
+    asyncio.run(test_websocket(camera_id="test_camera_id"))
