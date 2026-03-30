@@ -1,4 +1,6 @@
-[ ] - In Yolo Detector file, it has ExportFormats enum, put it in the correct place. 
+- For tasks.md, it is kinda alternate to `Trello` and agile for project management, I plan to keep using Github Issues and ``todo` file. 
+- I would prefer using `env.yml` rather than req.txt in my case.
+- fb16 has been added, it takes lower memory and get the same accuracy. 
 
 ## GP Tracking Dashboard — Task Plan (End-to-End, Multi-Worker)
 
@@ -146,4 +148,295 @@ Plan:
 - Dashboard websocket receives snapshots and renders danger status
 - Metrics + logs + health endpoints are meaningful
 - Reproducible install/run documented
+
+---
+
+---
+
+---
+
+---
+
+---
+
+Good — your mindset is correct. Now I’ll give you **focused, actionable guidance** (no fluff).
+
+---
+
+# 🎯 Your Goal
+
+> Turn this into a **real production-grade AI system**, not just a project.
+
+---
+
+# 🧠 1. The rule you MUST follow
+
+👉 **Depth > Features**
+
+If you keep adding features → you stay mid  
+If you go deep → you move toward senior
+
+---
+
+# 🏗️ 2. Lock the Architecture (non-negotiable)
+
+Refactor into **strict layers**:
+
+```
+/domain        → pure logic (tracking, depth, detection)
+/application   → use cases (track_object, process_frame)
+/infrastructure→ models, DB, external APIs
+/interfaces    → FastAPI routes, UI
+
+```
+
+Rules:
+
+- domain knows NOTHING about FastAPI, DB, or models
+- everything injected (dependency injection mindset)
+
+👉 This is where seniors stand out.
+
+---
+
+# 🤖 3. Turn AI into a real pipeline
+
+Right now it's likely “functions”.
+
+Make it:
+
+```
+Input → Preprocess → Model → Postprocess → Output
+
+```
+
+Add:
+
+- config-based model selection
+- ability to swap models (YOLO, custom, etc.)
+- batching support
+
+👉 Think like you're building a mini ML platform.
+
+---
+
+# ⚙️ 4. Backend like a real system
+
+Add:
+
+### Validation
+
+- Pydantic schemas everywhere
+
+### Logging
+
+- structured logs (not print)
+
+### Errors
+
+- custom exceptions
+- proper HTTP responses
+
+### API design
+
+- `/v1/track`
+- `/v1/detect`
+
+👉 Clean API = senior signal.
+
+---
+
+# 🔄 5. Async + Background processing
+
+Very important:
+
+- heavy tasks (AI inference) → background workers
+- use:
+  - queue (Redis + Celery or RQ)
+  - or FastAPI background tasks (start simple)
+
+👉 This separates juniors from real backend engineers.
+
+---
+
+# 📡 6. Real-time capability (optional but powerful)
+
+If you add:
+
+- WebSocket streaming
+- live tracking feed
+
+👉 This becomes a **serious system**
+
+---
+
+# 🧪 7. Testing (DON’T SKIP)
+
+Minimum:
+
+- unit tests for domain
+- 1–2 API tests
+
+You’ll learn:
+
+- design quality
+- edge cases
+- stability
+
+---
+
+# 🐳 8. Production mindset
+
+You already used Docker — good.
+
+Now improve:
+
+- docker-compose (backend + frontend + redis)
+- environment configs
+- `.env` handling
+
+---
+
+# 📊 9. Observability (very senior move)
+
+Add:
+
+- logging
+- simple metrics (time per inference)
+
+Optional:
+
+- Prometheus / Grafana later
+
+---
+
+# 🧩 10. One advanced feature ONLY
+
+Pick ONE:
+
+- model serving system
+- real-time tracking
+- multi-camera support
+- pipeline orchestration
+
+👉 Don’t do all. Depth.
+
+---
+
+# 🛑 When to STOP?
+
+This is critical.
+
+👉 Stop when:
+
+### ✅ You have:
+
+- clean architecture (strict layers)
+- working API (well designed)
+- AI pipeline (modular)
+- async/background processing
+- basic tests
+- dockerized system
+
+AND:
+
+### ✅ You can explain:
+
+- every design decision
+- trade-offs
+- how to scale it
+
+👉 If you can **defend your system like an engineer**, you’re ready.
+
+---
+
+# 🚨 When NOT to stop
+
+If:
+
+- code is messy
+- logic mixed everywhere
+- no tests
+- no structure
+
+👉 then you're not done
+
+---
+
+# 🧠 Final truth
+
+Senior ≠ knowing more tools  
+Senior = **how you think and structure systems**
+
+---
+
+# 🔥 If you follow this seriously
+
+You won’t just have a project
+
+👉 You’ll have:
+
+- a **portfolio-level system**
+- something you can talk about in interviews deeply
+- real engineering experience
+
+---
+
+If you want next:  
+I can **redesign your current repo structure step-by-step** into a clean architecture version.
+
+---
+
+---
+
+---
+
+---
+
+# 🏗️ The 3-project strategy (this is ideal for you)
+
+## 🥇 1. Core System (YOU ARE BUILDING THIS)
+
+👉 tracking_system
+
+Make it:
+
+- full pipeline (AI + backend + frontend)
+- real-time capable
+- modular AI system
+
+This becomes:  
+👉 your **main flagship project**
+
+---
+
+## 🥈 2. Deep Learning / Research project
+
+Not engineering — research style.
+
+Examples:
+
+- implement a paper (object tracking, SLAM, depth)
+- improve a model
+- experiment + metrics + evaluation
+
+👉 Shows:
+
+- you understand **math + DL deeply**
+
+---
+
+## 🥉 3. Robotics / Physical AI project
+
+Even simple:
+
+Examples:
+
+- simulation (ROS, Gazebo)
+- drone/car control logic
+- sensor fusion (camera + something)
+
+👉 Shows:
+
+- you connect **AI with physics/world**
 

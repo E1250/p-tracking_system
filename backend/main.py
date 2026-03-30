@@ -11,6 +11,8 @@ from backend.api.routers import health
 from contextlib import asynccontextmanager
 from infra.logger_structlog import StructLogger
 import asyncio
+import mlflow
+from backend.utils.experiment import log_config()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -47,7 +49,10 @@ async def lifespan(app: FastAPI):
 
     logger.warn("Shutting down the server....")
     # You can remove connections and release gpu here .  
-    
+
+mlflow.set_experiment("realtime-detection-system")
+log_config()
+
 app = FastAPI(
     title="Tracking System Backend",
     description="real-time frame processing API",

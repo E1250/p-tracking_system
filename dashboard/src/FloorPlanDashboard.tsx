@@ -39,8 +39,8 @@ function FloorPlanEditor() {
   const stageRef = useRef<Konva.Stage>(null)
   let currentFloor = floors[currentFloorIdx]
   let currentRoomNodes = currentFloor.rooms.at(selectedRoomIdx)?.nodes
-  const camerasStream = useCameraStream("ws://127.0.0.1:8000/dashboard/stream") ?? {test_camera_id: {isDanger: false, detection_metadata: []}}
-  console.log("local server connection", camerasStream)
+  const camerasStream = useCameraStream(import.meta.env.VITE_BACKEND_URL) ?? {test_camera_id: {isDanger: false, detection_metadata: []}}
+  // console.log("local server connection", camerasStream)
 
   // TODO, Test this here, you ight need to set
   const popNode = () => {

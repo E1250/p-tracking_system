@@ -79,3 +79,5 @@ docs — documentation only
 ```
 
 mention the type: more details about it. 
+
+And now for the deployment part, the task now is how to set or connect the backend with dashboard using links to fetch the data, and also take in mind that there is local testing also, thinking of automating the process, i mean it auto detect if it is deployment or debugging and set the variables based on this. the solution here is by using `.env`, yes. and for the backend for example, go to HT and add custom variable, this is going to work as .env also but on HT. make sure var names are the same in both `.env` and HF.

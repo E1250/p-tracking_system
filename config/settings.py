@@ -15,7 +15,6 @@ def join_tag(loader, node):
 yaml.SafeLoader.add_constructor("!join", join_tag)
 
 
-
 class PathsConfig(BaseModel):
     """Contains paths of directories"""
     project_dir: str
@@ -76,6 +75,8 @@ class AppConfig(BaseSettings):
     depth: DepthConfig
     intervals: IntervalsConfig
 
+    # Backend
+
 
     @classmethod
     def settings_customise_sources(cls, 
@@ -94,6 +95,7 @@ class AppConfig(BaseSettings):
         # Order by priority
         return (
             DotEnvSettingsSource(settings_cls),    # Most important
+            EnvSettingsSource(settings_cls),       # This allow for ex. hugging face to override .env values with its values. 
             YamlConfigSettingsSource(settings_cls), 
             )  # The return must be a tuple
 

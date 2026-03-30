@@ -3,7 +3,7 @@ import itertools
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from ai.contracts.detector import DetectionResults
 from backend.api.routers.metrics import active_cameras, frame_processing_duration_seconds
-from backend.contracts.camera_metadata import CameraMetadata 
+from backend.contracts.camera_metadata import CameraMetadata, DetectionMetadata
 import traceback
 
 import cv2 as cv
@@ -26,6 +26,7 @@ async def websocket_detect(websocket: WebSocket, camera_id:str):
     safety_detector = state.safety_detection_model
     depth_model = state.depth_model
     
+
     # Accepting the connection from the client
     await websocket.accept()
 
@@ -34,6 +35,7 @@ async def websocket_detect(websocket: WebSocket, camera_id:str):
     logger.info(f"Client ID >>{camera_id}<< Connected...")
     
     loop = asyncio.get_running_loop() 
+    run = mlflow.start_run(run_name=f'camera_{camera_id}')
 
     try:
         # What are the info you aim to collect from the camera? 
@@ -62,17 +64,32 @@ async def websocket_detect(websocket: WebSocket, camera_id:str):
         # Keep receiving messages in a loop until disconnection. 
         while True:
 
-            # Profiling
-            time_start = time.time()
-
             frame_bytes = await websocket.receive_bytes()
             
+            # Profiling
+            t0 = time.time()            
+
             image_array = await loop.run_in_executor(None, decode_frame)
+            decode_duration_seconds.labels(camera_id).observe(round(time.time() - t0, 3))
+            mlflow.log_metric("frame_processing_time", round(time.time() - t0, 3))
 
             detection_task = loop.run_in_executor(None, run_detection, image_array)
             safety_task = loop.run_in_executor(None, run_safety, image_array)
+
             detections, safety_detection = await asyncio.gather(detection_task, safety_task)
-            
+            detection_duration_seconds.labels(camera_id).observe(round(time.time() - t0, 3))
+            mlflow.log_metric("detection_duration_seconds", round(time.time() - t0, 3))
+
+            depth_points = await loop.run_in_executor(None, run_depth, image_array, boxes_center) if boxes_center else []
+            depth_duration_seconds.labels(camera_id).observe(round(time.time() - t0, 3))
+            mlflow.log_metric("depth_duration_seconds", round(time.time() - t0, 3))
+
+            # Profiling
+            frame_processing_duration_seconds.labels(camera_id).observe(round(time.time() - t0, 3))
+            logger.debug("Frame processed", camera_id=camera_id)
+            mlflow.log_metric("frame_processing duration time", round(time.time() - t0, 3))
+
+
             boxes_center = []
             boxes_center_ratio = []
             for box in detections.detections:
@@ -82,34 +99,27 @@ async def websocket_detect(websocket: WebSocket, camera_id:str):
                 ycenter = (ymax + ymin) / 2
                 boxes_center.append((int(xcenter), int(ycenter)))
                 boxes_center_ratio.append(xcenter / image_array.shape[1])
-            
-            depth_points = await loop.run_in_executor(None, run_depth, image_array, boxes_center) if boxes_center else []
 
-            detection_metadata = [{"depth": depth, "xRatio": xRatio} for depth, xRatio in zip(depth_points, boxes_center_ratio)]
+            detection_metadata = [DetectionMetadata(depth=depth, xRatio=xRatio) for depth, xRatio in zip(depth_points, boxes_center_ratio)]
             metadata = CameraMetadata(camera_id=camera_id, is_danger = True if safety_detection else False, detection_metadata=detection_metadata)
-            print(metadata)
             state.camera_metadata[camera_id] = metadata.model_dump()
 
-            # Profiling
-            duration = time.time() - time_start
-            frame_processing_duration_seconds.labels(camera_id).observe(round(duration, 3))
-            logger.debug("Frame processed", camera_id=camera_id)
-            
             # Note that JSONResponse doesn't work here, as it is for HTTP
             await websocket.send_json({"status": 200, "camera_id": camera_id})
 
     except WebSocketDisconnect:
         logger.warn(f"Client ID >>{camera_id}<< Disconnected Normally...")
-        traceback.print_exc()  # This one is actually really better, it shows more details about the issue happened. 
-        # Also work on and create the logger.exception, as it directly controls printing more details about the issue happened.
         state.camera_metadata.pop(camera_id, None)
 
     except Exception as e:
         logger.error(f"Error in websocker, Client ID: >>{camera_id}<<: {e}")
-        traceback.print_exc()
+        traceback.print_exc() # This one is actually really better, it shows more details about the issue happened. 
+        # Also work on and create the logger.exception, as it directly controls printing more details about the issue happened.
         await websocket.close()
+
     finally:
         active_cameras.dec()
+        mlflow.end_run()
 
 
 # Uncomment this when needed, It is the same but using HTTP, which is Request Response only. could be used for testing. 

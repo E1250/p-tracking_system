@@ -65,3 +65,5 @@ the per camera selection is going to be really hard, as it is going to be many n
 So the better answer here, is per floor, you just pull the full floor details, and then you filter what you exactly need. 
 
 For the model, It is really beign suggested to let HF handling downloading and storing the model, don't hardcode the model path or the file. 
+
+Now we came to really critical point, which is moving to redis, but before this, i aimed to collect and monitor and profile my project, ofcourse for comparing and has a better understanding how this system works. I planeed to use MLFlow for the system, and prometheus for now.. 

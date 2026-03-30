@@ -1,5 +1,5 @@
-import React from "react"
-import { Line, Circle, Image as KonvaImage, Stage, Layer } from "react-konva"
+import React, { useState } from "react"
+import { Line, Circle, Image as KonvaImage, Stage, Layer, Text, Rect, Group } from "react-konva"
 import useImage from "use-image"
 import { Node } from "../types/graph"
 import { placeDepthPointOnRay, placeDetectionPoint, StreamDetections } from "../utils/nodes"
@@ -43,6 +43,7 @@ export function CameraNode({icon, pos, rotation=0, key, isHovering=false, camera
 
   const [image] = useImage(icon)
   let detectionPoints:Node[] | null = []
+  // let [hoveringOnCamera, setHoveringOnCamera] = useState<boolean>(false)
 
   if (cameraData.detection_metadata !==0 && roomNodes.length !== 0) {
     detectionPoints = cameraData.detection_metadata
@@ -66,6 +67,8 @@ export function CameraNode({icon, pos, rotation=0, key, isHovering=false, camera
       offsetY={25}
       width={50} 
       height={50}
+      // onMouseEnter={() => {setHoveringOnCamera(true); console.log("in")}}
+      // onMouseLeave={() => {setHoveringOnCamera(false); console.log("out")}}
       />
 
       {detectionPoints.map((pt, i) => (

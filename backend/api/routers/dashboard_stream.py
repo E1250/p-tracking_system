@@ -1,6 +1,7 @@
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from backend.api.routers.metrics import active_dashboards 
 import asyncio
+import traceback
 
 router = APIRouter()
 
@@ -35,5 +36,7 @@ async def dashboard_websocket(websocket: WebSocket):
 
     except Exception as e:
         logger.error(f"Dashboard Error: {e}")
+        traceback.print_exc()
+
     finally:
         active_dashboards.dec()

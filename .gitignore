@@ -3,7 +3,7 @@
 ai/dl_models/
 node_modules/
 dummy_data/
-app/logs
+app/logs/
 
 # App Folder
 .env
@@ -11,3 +11,9 @@ app/logs
 # Temps
 .qodo
 .ruff_cache
+
+current_task.md
+
+
+# MLFlow
+mlflow.db

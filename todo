@@ -1,2 +1,14 @@
 [X] Fix removing the line cause removing of a camera, even if it was not on the line. 
 [ ] some bugs about the setSelectRoomIdx(-1) issues, which better to use null instead. going to work on this later. 
+[ ] - In Yolo Detector file, it has ExportFormats enum, put it in the correct place. 
+
+
+// AI
+[ ] Package ai tools
+[ ] Apply model tracking and drift detection, Monitor your DL models
+
+// Backend
+[ ] Full Monitor Backend
+[ ] Compare experiments using MLFlow
+[ ] Use redis
+[ ] How to apply health checks
