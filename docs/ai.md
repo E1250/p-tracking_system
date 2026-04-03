@@ -30,3 +30,5 @@ so the best practise for this, you upload your models on HF, Each model must hav
 
 Also i faced a new kind of issue today, it is regarding the sub-repo depth, i noticed on Github he is not actually reading it at all. As it has its own git. 
 using this, i could remove a specific file from cache `git rm --cached ai/depth/depth_anything_v2`
+
+and this to get back to the last commit, git reset --soft HEAD~1
