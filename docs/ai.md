@@ -27,3 +27,6 @@ The model profiler link - https://app.clear.ml/projects/bffe65b5fe1649dd9d202e18
 
 
 so the best practise for this, you upload your models on HF, Each model must have its own HF repo model, and its info, but you can add more than one version of the same model under the same repo. ex. YOLOs, YOLOm, YOLOl at one repo. and mention the version in the pull to fetch the correct one. 
+
+Also i faced a new kind of issue today, it is regarding the sub-repo depth, i noticed on Github he is not actually reading it at all. As it has its own git. 
+using this, i could remove a specific file from cache `git rm --cached ai/depth/depth_anything_v2`
