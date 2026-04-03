@@ -9,4 +9,3 @@ pydantic_settings
 structlog
 
 tracking_system@git+https://github.com/E1250/p-tracking_system.git
-depth-anything-v2@git+https://github.com/DepthAnything/Depth-Anything-V2.git
