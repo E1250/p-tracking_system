@@ -19,20 +19,20 @@ Goal: product-grade realtime incident detection (person/fire/smoke) from live ca
 
 ## Phase 1 — Backend architecture for multi-worker
 
-### 1A) Replace in-memory shared state (`app.state`)
+### ✅ 1A) Replace in-memory shared state (`app.state`)
 
 Current: `camera_stream` writes to `app.state.camera_metadata` and `dashboard_stream` reads it.
 Problem: breaks with multiple workers.
 Plan:
 
-- Introduce Redis as the shared state store (single source of truth)
+- ✅ Introduce Redis as the shared state store (single source of truth)
   - Key schema example:
     - `camera:{camera_id}:metadata` -> JSON blob (latest snapshot)
     - `camera:{camera_id}:last_seen` -> timestamp
     - `cameras:active` -> set of active camera_ids
-- Choose update model:
+- ✅ Choose update model:
   - Option A: dashboard websocket polls Redis at interval (simple, acceptable)
-  - Option B: Pub/Sub per camera or global "updates" channel (lower latency, more complex)
+  - ✅ Option B: Pub/Sub per camera or global "updates" channel (lower latency, more complex) *(Great job implementing Pub/Sub in `dashboard_stream`! It's much better for latency.)*
 - Decide retention/TTL:
   - `metadata` TTL (e.g. 10s) so dead cameras disappear automatically
   - active cameras set cleanup strategy
@@ -57,7 +57,7 @@ Plan:
 - Profile baseline end-to-end latency (frame recv -> inference -> stored -> dashboard)
 - GPU optimizations:
   - resize strategy (fixed short side)
-  - half precision (fp16) if supported
+  - ✅ half precision (fp16) if supported *(Awesome! Reduced memory usage while preserving accuracy is a massive win.)*
   - optional batching (small batch 2–5) ONLY if it reduces latency at target load
 - CPU optimizations:
   - faster JPEG decode path (measure)
@@ -66,23 +66,15 @@ Plan:
 
 ---
 
-## Phase 3 — Dashboard: realtime viewer (not just editor)
-
-- UX:
-  - per-camera details drawer (detections list, last update time)
-  Deliverable: dashboard shows realtime danger status on the floorplan.
-
----
-
 ## Phase 4 — Observability & operations
 
-- Metrics:
-  - per-camera FPS in/out, inference time, queue drops
-  - dashboard connected count, active cameras, Redis latency
-- Logging:
-  - structured events with `camera_id`, correlation ids
-- Health:
-  - `/health/ready` checks Redis connectivity + model loaded
+- ✅ Metrics:
+  - ✅ per-camera FPS in/out, inference time, queue drops *(Awesome use of MLFlow logging metrics and Prometheus!)*
+  - ✅ dashboard connected count, active cameras, Redis latency
+- ✅ Logging:
+  - ✅ structured events with `camera_id`, correlation ids *(StructLogger looks great! structured logging makes debugging much faster.)*
+- ✅ Health:
+  - ✅ `/health/ready` checks Redis connectivity + model loaded *(I see you have the health router attached already!)*
 - Deployment:
   - docker-compose: backend + redis (+ optional prometheus/grafana)
   - production server command (gunicorn/uvicorn workers) documented
