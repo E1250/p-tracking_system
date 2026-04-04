@@ -3,7 +3,7 @@ from ai.contracts.detector import BBox, DetectionResults
 from ultralytics import YOLO
 from pathlib import Path
 from typing import List
-from domain.detector import Detector
+from ai.domain.detector import Detector
 from ai.utils.constants import YOLOExportFormats
 
 class YOLO_Detector(Detector):

@@ -1,5 +1,5 @@
 from ultralytics import YOLO
-from domain.tracker import Tracker
+from ai.domain.tracker import Tracker
 
 class YoloTracker(Tracker):
     def __init__(self, yolo_detection_model: YOLO, tracker_name:str):
