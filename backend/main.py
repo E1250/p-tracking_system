@@ -3,18 +3,16 @@ from fastapi import FastAPI
 from ai.depth.depth_anything import DepthAnything
 from ai.detectors.yolo_detector import YOLO_Detector
 from config.settings import AppConfig
-from backend.api.routers.metrics import metrics_asgi_app
+from api.routers.metrics import metrics_asgi_app
 from infra.system_metrics import log_system_metrics
-from backend.api.routers import camera_stream
-from backend.api.routers import dashboard_stream
-from backend.api.routers import health
+from api.routers import camera_stream
+from api.routers import dashboard_stream
+from api.routers import health
 from contextlib import asynccontextmanager
 from infra.logger_structlog import StructLogger
 import asyncio
 import mlflow
-from backend.utils.experiment import log_config
 import torch
-from redis.asyncio import Redis
 from huggingface_hub import hf_hub_download
 import redis.asyncio as aioredis
 
