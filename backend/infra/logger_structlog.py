@@ -6,7 +6,7 @@ import logging
 
 # Don't forget to keep logs.json file meaningful. 
 def setup_logging(logs_path: Path | str):
-    log_file = open(logs_path, "a", encoding="utf-8")
+    # log_file = open(logs_path, "a", encoding="utf-8")
     structlog.configure(
         processors = [
             structlog.processors.StackInfoRenderer(),  # Stack strace, showing the exact source of errors.
