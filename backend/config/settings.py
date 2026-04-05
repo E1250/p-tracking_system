@@ -18,12 +18,12 @@ yaml.SafeLoader.add_constructor("!join", join_tag)
 class PathsConfig(BaseModel):
     """Contains paths of directories"""
     project_dir: str
-    models_dir: str
+    # models_dir: str
     # logs_dir: str
 
 class YoloConfig(BaseModel):
     """Contains yolo configurations"""
-    model_path: str
+    # model_path: str
     classes: List[str]
     batch_size: int
     epochs: int
@@ -33,12 +33,12 @@ class YoloConfig(BaseModel):
 
 class SecurityDetector(BaseModel):
     "Contains Security Detectors like Smoke - Fire"
-    model_path: str
+    # model_path: str
     classes: List[str]
 
 class DepthConfig(BaseModel):
     "Contains depths estimation configurations"
-    model_path: str
+    # model_path: str
     encoder: Literal["vits", "vitb", "vitl", "vitg"]
 
 class IntervalsConfig(BaseModel):
