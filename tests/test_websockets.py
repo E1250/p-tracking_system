@@ -11,7 +11,10 @@ async def test_websocket(camera_id:str="test_camera_id"):
     loop = asyncio.get_running_loop()
 
     try:
-        async with websockets.connect(uri) as websocket:
+        async with websockets.connect(
+            uri,
+            additional_headers={'Origin': "https://e1250-tracking-system-backend.hf.space"}
+            ) as websocket:
             # The best way to send the image to the backend, is by encoding and decoding it, 
             # As it will still contains its details like the shape, 
             # otherwide, you will always need the image shape to decode again, which is not good at all. 

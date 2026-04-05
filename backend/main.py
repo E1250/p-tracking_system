@@ -75,6 +75,7 @@ app = FastAPI(
     lifespan=lifespan
     )
 
+# Allow
 app.add_middleware(
     TrustedHostMiddleware,
     allowed_hosts=["*"]
