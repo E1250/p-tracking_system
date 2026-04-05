@@ -1,6 +1,7 @@
 fastapi
 uvicorn
 gunicorn
+websockets  
 
 ultralytics
 
