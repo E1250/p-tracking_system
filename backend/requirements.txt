@@ -15,3 +15,4 @@ prometheus_client
 
 numpy 
 pandas
+mlflow
