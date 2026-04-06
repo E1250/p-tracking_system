@@ -44,7 +44,7 @@ async def dashboard_websocket(websocket: WebSocket):
 
     except Exception as e:
         logger.error(f"Dashboard Error: {e}")
-        traceback.print_exc()
+        logger.exception(e)
 
     finally:
         active_dashboards.dec()

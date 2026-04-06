@@ -2,6 +2,7 @@
 # This file is being used mostly in HTTP and not websockets. 
 # Health check is being used for example by docker, to check is dependencies are working fine, if not, he might restart. 
 
+from requests import Request
 from http import HTTPStatus
 from datetime import datetime
 from fastapi import APIRouter, Response
@@ -28,15 +29,12 @@ async def live_check(response: Response):
         }
 
 @router.get("/ready")
-async def ready_check(response: Response):
+async def ready_check(response: Response, request: Request):
     """
     Checck if parts work here, ex. are data readable. 
     Are data readable here. 
     Also can this instance accept traffic right now, or send them to another healthy instance.
     """
-    # 1. Check database ping
-    # 2. Check Redis or cache ping
-    # 3. Queue connection or length
 
     checks = {}
     healthy = True
@@ -57,10 +55,12 @@ async def ready_check(response: Response):
         checks["detection_model"] = "can't load"
         healthy = False
 
+    checks["active_cameras"] = list(await request.app.state.redis.smembers("cameras:active"))
+
     response.status_code = HTTPStatus.OK if healthy else HTTPStatus.SERVICE_UNAVAILABLE
 
     return {
-        "status": "ready",
+        "status": "ready" if healthy else "degraded",
         "checks": checks,
         "timestamp": datetime.now().isoformat(),   # Sending the time also is a good practise
         "version": "1.0.0",

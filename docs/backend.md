@@ -69,3 +69,6 @@ For the model, It is really beign suggested to let HF handling downloading and s
 Now we came to really critical point, which is moving to redis, but before this, i aimed to collect and monitor and profile my project, ofcourse for comparing and has a better understanding how this system works. I planeed to use MLFlow for the system, and prometheus for now.. 
 
 as i notinced, locally websockets works fine, but for production, add the --ws flag, as locally we use `ws://` but in prod we use `wss://`
+
+
+also regarding logging and mlflow, overall i must had created a one run for the session, and then child run per each camera, not a full run per each camera.

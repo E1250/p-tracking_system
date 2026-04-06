@@ -29,6 +29,7 @@ async def lifespan(app: FastAPI):
     # Using this way to can store data. it is acts as a dict which holds instances
     app.state.logger = logger
     app.state.settings = settings
+    app.state.mlflow_run_id = parent_run.info.run_id
    
     logger.info("Starting Server.... ")
     # asyncio.create_task(log_system_metrics(logger, logger_interval_sec=settings.intervals.system_metrics_seconds))    
@@ -63,6 +64,7 @@ async def lifespan(app: FastAPI):
 dagshub.init(repo_owner='eslam760000', repo_name='p-tracking_system', mlflow=True)
 mlflow.set_tracking_uri("sqlite:///config/logs/mlflow.db")
 mlflow.set_experiment("realtime-detection-system")
+parent_run = mlflow.start_run(run_name="server_session")
 mlflow.enable_system_metrics_logging()
 
 app = FastAPI(

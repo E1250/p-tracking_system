@@ -4,7 +4,6 @@ from ultralytics import YOLO
 from pathlib import Path
 from typing import List
 from ai.domain.detector import Detector
-from ai.utils.constants import YOLOExportFormats
 
 class YOLO_Detector(Detector):
     def __init__(self, model_path:Path|str="yolo26n.pt", f16=False):
@@ -32,5 +31,5 @@ class YOLO_Detector(Detector):
     def validate(self):
         pass
         
-    def export(self, output_format:YOLOExportFormats=YOLOExportFormats.onnx) -> str:
+    def export(self, output_format) -> str:
         pass

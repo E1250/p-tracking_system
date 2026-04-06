@@ -41,13 +41,10 @@ async def websocket_detect(
 
     # Logging and tracking action    
     active_cameras.inc()
+    await redis.sadd("cameras:active", camera_id)  # Save connected camera name into redis
     logger.info(f"Client ID >>{camera_id}<< Connected...")
-    
-    if mlflow.active_run():
-         mlflow.end_run()
-    run = mlflow.start_run(run_name=f'camera_{camera_id}', nested=True)
+
     step_counter = itertools.count()
-    log_config()
 
     loop = asyncio.get_running_loop() 
     # Queue removing old images in case they were being stacked
@@ -71,7 +68,6 @@ async def websocket_detect(
             raise
     
     async def process_frames():
-
         try:
 
             logger.info(f"Camera {camera_id} start sending frames...")
@@ -84,12 +80,12 @@ async def websocket_detect(
                 
                 # Profiling
                 t0 = time.time()            
-
                 image_array = await loop.run_in_executor(None, decode_frame, frame_bytes)
                 decode_duration_seconds.labels(camera_id).observe(round(time.time() - t0, 3))
                 mlflow.log_metric("frame_processing_time", round(time.time() - t0, 3), next(step_counter))
 
                 # Apply detection models
+                t0 = time.time()
                 detection_task = loop.run_in_executor(None, detector.detect, image_array)
                 safety_task = loop.run_in_executor(None, safety_detector.detect, image_array)
                 detections, safety_detection = await asyncio.gather(detection_task, safety_task)
@@ -111,6 +107,7 @@ async def websocket_detect(
                     boxes_center.append((int(xcenter), int(ycenter)))
                     boxes_center_ratio.append(xcenter / image_array.shape[1])
                 
+                t0 = time.time()
                 depth_points = await loop.run_in_executor(None, depth_model.calculate_depth, image_array, boxes_center) if boxes_center else []
                 depth_duration_seconds.labels(camera_id).observe(round(time.time() - t0, 3))
                 mlflow.log_metric("depth_duration_seconds", round(time.time() - t0, 3), next(step_counter))
@@ -133,22 +130,26 @@ async def websocket_detect(
         except Exception as e:
             logger.error(f"Processing Error: {e}", camera_id=camera_id)
             raise
+    
+    with mlflow.start_run(run_name=f'camera_{camera_id}', nested=True, parent_run_id=state.mlflow_run_id):
+        log_config()
 
-    try:
-        await asyncio.gather(
-            receive_frames(),
-            process_frames()
-        )
+        try:
+            await asyncio.gather(
+                receive_frames(),
+                process_frames()
+            )
 
-    except WebSocketDisconnect:
-        logger.warn(f"Client ID >>{camera_id}<< Disconnected Normally...")
+        except WebSocketDisconnect:
+            logger.warn(f"Client ID >>{camera_id}<< Disconnected Normally...")
 
-    except Exception as e:
-        logger.error(f"Error in websocker, Client ID: >>{camera_id}<<: {e}")
-        traceback.print_exc() # This one is actually really better, it shows more details about the issue happened. 
-        # Also work on and create the logger.exception, as it directly controls printing more details about the issue happened.
-        await websocket.close()
+        except Exception as e:
+            logger.error(f"Error in websocker, Client ID: >>{camera_id}<<: {e}")
+            logger.exception(e)
+            # This one is actually really better, it shows more details about the issue happened. 
+            # Also work on and create the logger.exception, as it directly controls printing more details about the issue happened.
+            await websocket.close()
 
-    finally:
-        active_cameras.dec()
-        mlflow.end_run()
+        finally:
+            await redis.srem("cameras:active", camera_id) # Remove the camera from redis connected cameras
+            active_cameras.dec()

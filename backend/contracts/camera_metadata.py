@@ -8,4 +8,4 @@ class DetectionMetadata(BaseModel):
 class CameraMetadata(BaseModel):
     camera_id: str
     is_danger: bool = False
-    detection_metadata: List
+    detection_metadata: List[DetectionMetadata]
