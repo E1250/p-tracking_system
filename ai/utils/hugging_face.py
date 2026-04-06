@@ -2,13 +2,6 @@
 
 from huggingface_hub import hf_hub_download, login, upload_folder
 
-# (optional) Login with your Hugging Face credentials
-# login()
-
-# Push your model files
-# upload_folder(folder_path=".", repo_id="e1250/safety_detection", repo_type="model")
-
-
 def hf_fetch_model(repo_id: str, filename: str) -> str:
     """
     repo_id: 

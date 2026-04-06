@@ -1,27 +1,17 @@
-# Shared defaults values that work for most people or envs
-# TODO, mostly this might not work in docker, due to the "\", feel free to replace it by [*proj_dir, ai, dl_models] for exmple
+# YAML file contains Shared defaults values that work for most people or envs
 
 project_name: Tracking Config
 # This one called Literal block, there is another one called Folded (>)
 project_desc: |
   Tracking System for detection, providing real-time camera status throught a Dashboard.
 task: indoor
-
 intervals:
-  system_metrics_seconds: 3.0  # Logging system metrics every
-  frames_summary_every: 30     # Number of frames to create a logs summary
-  realtime_updates_every: 2   # backend send updates every n seconds?
-
-prometheus_port: 9091
-
-paths:
-  # project_dir: &proj_dir G:\MyComputer\Workspace\Projects\gp-tracking-dashboard\tracking_dashboard
-  project_dir: &proj_dir .
-  # models_dir: &models_dir !join [*proj_dir, ai, dl_models]
-  # logs_dir:  !join [*proj_dir, backend, config, logs, logs] 
+  system_metrics_seconds: 3.0 # Logging system metrics every
+  frames_summary_every: 30 # Number of frames to create a logs summary
+  realtime_updates_every: 2 # backend send updates every n seconds?
 
 yolo:
-  # model_path: !join [*models_dir, yolo26s.pt] 
+  model_name: "yolo26n.pt"
   classes:
     - person
   batch_size: 16
@@ -31,11 +21,12 @@ yolo:
   data_path: ""
 
 security_detector:
-  # model_path: !join [*models_dir, "yolo_smoke_fire.pt"]
+  model_name: "yolo_smoke_fire.pt"
   classes:
     - fire
     - smoke
 
-depth: 
-  # model_path: !join [*models_dir, depth_anything_v2_vits.pth]  
+depth:
+  model_name: "depth_anything_v2_vits.pth"
+  device: "cpu"
   encoder: "vits"

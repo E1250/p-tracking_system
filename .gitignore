@@ -1,20 +1,21 @@
-*/__pycache__
-
-ai/dl_models/
+current_task.md
 node_modules/
-dummy_data/
-config/logs/
-*.pt
 
-# App Folder
-.env
+# Testing folders
+config/logs/
+dl_models/
+dummy_data/
+playground*
 
 # Temps
 .qodo
 .ruff_cache
+*/__pycache__
+.cache
 
-current_task.md
+# Security
+.env
 
-
-# MLFlow
+# Data Files
 mlflow.db
+*.pt

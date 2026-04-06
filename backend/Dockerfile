@@ -18,5 +18,5 @@ COPY . .
 # As HF want for backend.
 EXPOSE 7860
 
-# Starting the server.  0.0.0.0 accepts connections from anywhere, not just local. 
+# 0.0.0.0 accepts connections from anywhere, not just local. also don't forget --ws to enable sockets on docker
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "7860", "--ws", "websockets"]

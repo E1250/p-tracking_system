@@ -1,26 +1,28 @@
 # This is an overall alternative of SetupTools function that had been used before to create a package
 # It tells pip which tool to use to build/install package.
-# my-custom-ai-logic @ git+https://github.com/your-username/your-repo.git#subdirectory=ai_tools_folder
-#tracking_system_ai@git+    .git#subdirectory=folder_name
+# project-name-in-card@git+https://github.com/your-username/your-repo.git#subdirectory=folder_name
+# project-name-in-card@git+https://github.com/your-username/your-repo.git#branch
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-# project metadata
+# Project Data Card
 [project]
 name = "tracking_system"  # What ll be used in 'pip install'
-version = "0.0.6"  # i increased this after some modifications to the ai code. 
-description = "tracking_system"
+version = "0.0.6"  # Increase this after some modifications to the ai package code. 
+description = ""
 requires-python = ">=3.11"
 dependencies = [
     "torch",
     "numpy",
     "opencv-python",
+    "pydantic",
+    "ultralytics"
 ]
 
-# pip install -e ".[dev]" -> This create a group of required package for dev, not deploy. differs between the user of this package and the contributer
-# As the user does't require testing packages, but contributer do
+# pip install -e ".[dev]" -> This create a group of required package for dev, not deploy. 
+# differs between the user of this package and the contributer As the user does't require testing packages, but contributer do.
 [project.optional-dependencies]
 dev = [
     "pytest",
@@ -31,8 +33,7 @@ dev = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["ai"]
-
+packages = ["ai"]  # Match folder name in repo
 
 # Note that it ignore files in .gitignore by default.
 [tool.ruff]

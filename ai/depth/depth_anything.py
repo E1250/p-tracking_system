@@ -1,6 +1,4 @@
 from ai.depth.depth_anything_v2.depth_anything_v2.dpt import DepthAnythingV2
-# from depth_anything_v2.dpt import DepthAnythingV2
-
 import torch
 from pathlib import Path
 import cv2 as cv
@@ -30,7 +28,7 @@ class DepthAnything:
         return:
             depth as an image
         """
-        if isinstance(frame, (str, Path)):  # in case it was a path.
+        if isinstance(frame, (str, Path)): 
             raw_img = cv.imread(frame)  
         elif isinstance(frame, numpy.ndarray):
             raw_img = frame
@@ -57,7 +55,7 @@ class DepthAnything:
         # TIP: I was advised in this part to always keep the math outside the loop to utilize C-level numpy optimization
 
         d_min, d_max = depth.min(), depth.max()
-        normalized_depth = (depth -d_min) / (d_max - d_min)
+        normalized_depth = (depth - d_min) / (d_max - d_min)
         depth_values = [normalized_depth[p[1], p[0]].item() for p in points]
 
         return depth_values

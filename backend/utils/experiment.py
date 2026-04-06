@@ -1,12 +1,11 @@
+from backend.config.settings import AppConfig
 import mlflow
 
-def start_run(camera_id: str):
-    return mlflow.start_run(run_name=f"camera_{camera_id}")
-
+config = AppConfig()
 def log_config():
-    mlflow.log_param("detector", "yolov26_n")
-    mlflow.log_param("safety_model", "custom YOLO26_n")
-    mlflow.log_param("depth_model", "depthAnything_n")
+    mlflow.log_param("Detector", config.yolo.model_name)
+    mlflow.log_param("Safety Model", config.security_detector.model_name)
+    mlflow.log_param("Depth Model", config.depth.model_name)
 
 def log_metrics(metrics:dict):
     for k, v in metrics.items():

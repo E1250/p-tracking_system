@@ -6,7 +6,7 @@ async def test_server(number_of_cameras:int=1):
     camera_tasks = [test_websocket(camera_id=f"camera_{i}") for i in range(number_of_cameras)]
     dashboard_task= test_dashboard_client()
 
-    # Running tasks together. 
+    # Running tasks together
     await asyncio.gather(
         *camera_tasks,
         dashboard_task,

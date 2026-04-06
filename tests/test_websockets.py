@@ -15,9 +15,6 @@ async def test_websocket(camera_id:str="test_camera_id"):
             uri,
             # additional_headers={'Origin': "https://e1250-tracking-system-backend.hf.space"}
             ) as websocket:
-            # The best way to send the image to the backend, is by encoding and decoding it, 
-            # As it will still contains its details like the shape, 
-            # otherwide, you will always need the image shape to decode again, which is not good at all. 
             
             while True:
 
@@ -25,6 +22,10 @@ async def test_websocket(camera_id:str="test_camera_id"):
                 def load_encode():
                     # Loading the image.
                     image = cv.imread(r"G:\MyComputer\Workspace\Projects\gp-tracking-dashboard\tracking_dashboard\dummy_data\home fire smoke.jpg")
+                    
+                    # The best way to send the image to the backend, is by encoding and decoding it, 
+                    # As it will still contains its details like the shape, 
+                    # otherwide, you will always need the image shape to decode again, which is not good at all. 
                     # Encode the image and send to socket
                     _, encoded_image = cv.imencode(".jpg", image)
 

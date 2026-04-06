@@ -1,22 +1,27 @@
+# Web
 fastapi
 uvicorn
 gunicorn
-websockets  
+websockets
 
+# AI
 ultralytics
+tracking_system@git+https://github.com/E1250/p-tracking_system.git@main
 
+# Arch
 pydantic
 pydantic_settings
 structlog
 
-tracking_system@git+https://github.com/E1250/p-tracking_system.git@main
 
 redis
 upstash_redis
+
+# Logging & Monitoring
 prometheus_client
+dagshub
+mlflow
 
 numpy 
 pandas
-mlflow
 huggingface_hub 
-dagshub
