@@ -1,13 +1,26 @@
-# # ruff
+# Stop in any command fails
+set -e 
+
+# pre-commit - Already runnging ruff
+pre-commit run --all-files
+
+# ruff
 # echo "Running ruff to check for bad imports, messy structure and style drift."
-# ruff check .
+# ruff format .
+# ruff check . --fix
+# ruff check . 
+# Fix the rest of ruff manually
 
-# # mypy
-# echo "Running mypy to check for wrong contracts, wrong return types and bugs"
-# mypy .
+# Pyright 
+echo "Running pyright to check for wrong retuns and type contracts"
+pyright
 
-# import-linter
-# echo "Running import-linter to prevent illegal imports enforcing clean architecutre"
-# lint-imports
+# Pytest
+pytest
 
-# echo "#### Checking Done ####"
+# Mkdocs
+mkdocs build
+
+
+
+echo "#### Checking Done ####"

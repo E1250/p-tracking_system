@@ -29,16 +29,42 @@ dev = [
     "pytest-asyncio",
     "pytest-cov",
     "pytest-mock",
-    "httpx"
+    "httpx",
+    "ruff",  # Code Formater and linter
+    "pyright", # type checker
+    "mkdocs",
+    "pre-commit"
+
 ]
 
 [tool.hatch.build.targets.wheel]
 packages = ["ai"]  # Match folder name in repo
 
+# Ruff Section
 # Note that it ignore files in .gitignore by default.
 [tool.ruff]
 exclude = [
     "ai/Depth-Anything-V2",
-    "playground.py",
-    "playground.ipynb"
+    "playground.*",
 ]
+# Feel free also to customize ruff settings from here before formating it from cli
+
+
+# Pyright
+[tool.pyright]
+
+include = ["ai"]
+
+typeCheckingMode = "basic"  # Or strict is you want true senior-level regorous check
+reportMissingImports = true
+reportMissingTypeStubs = false
+
+
+# Pytest
+[tool.pytest.ini_options]
+
+testpaths = ["tests"]
+
+# Requierd for pytest-asyncio
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
