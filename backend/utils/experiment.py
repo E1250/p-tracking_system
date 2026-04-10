@@ -1,4 +1,4 @@
-from backend.config.settings import AppConfig
+from config.settings import AppConfig
 import mlflow
 
 config = AppConfig()
