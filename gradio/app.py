@@ -1,41 +1,7 @@
-import websockets
 import gradio as gr
 import asyncio
-import requests
 
-
-def check_backend_health():
-    health_url = "https://e1250-tracking-system-backend.hf.space/health/live"
-    try:
-        response = requests.get(health_url, timeout=5)
-        if response.status_code == 200:
-            return "Server Online"
-        else:
-            return "Server Offline"
-    except Exception as e:
-        return f"Server Error, {e}"
-
-
-async def send_frame_to_websocket(image_path: str | None, camera_id: str | None):
-    if image_path is None:
-        raise gr.Error("No Image provided")
-    if camera_id is None:
-        raise gr.Error("Camera ID is requried")
-
-    with open(image_path, "rb") as f:
-        image_bytes = f.read()
-
-    # uri = f"ws://127.0.0.1:8000/detectors/stream/{camera_id}"
-    uri = f"wss://e1250-tracking-system-backend.hf.space/detectors/stream/{camera_id}"
-
-    try:
-        async with websockets.connect(uri) as websocket:
-            await websocket.send(image_bytes)
-            gr.Info(f"Frame was sent to {camera_id}..")
-            return f"Frame was sent to {camera_id}"
-    except Exception as e:
-        gr.Error("Error while connecting and sending the frame..")
-        return f"Error: {e}"
+from backend_client import check_backend_health, send_frame_to_websocket
 
 
 def wrapper(image, camera_id):
@@ -45,7 +11,10 @@ def wrapper(image, camera_id):
 with gr.Blocks() as demo:
     # On load - Refresh every 60 Seconds
     status_indicator = gr.Markdown("Checking Server Status")
-    demo.load(fn=check_backend_health, outputs=status_indicator, every=60)
+    demo.load(fn=check_backend_health, outputs=status_indicator)
+    gr.Timer(60).tick(
+        fn=check_backend_health, outputs=status_indicator
+    )  # Also check backend connectivity every 60 seconds
 
     gr.Markdown(
         """
@@ -62,7 +31,8 @@ with gr.Blocks() as demo:
                 * There is an indicator at the top of the page showing if the server is online or offline
             2. Open Vercel Dashboard and make sure you create a line and place a camera with an id. [Dashboard Vercel](https://p-tracking-system.vercel.app/)
             3. Open Gradio, Make sure you add the same `camera_id`, upload an image, then click send
-            4. Go back into the dashboard, Give it couple of seconds (Due to HF env limitation - CPU). then see the updates       
+            4. Go back into the dashboard, Give it couple of seconds (Due to HF env limitation - CPU). then see the updates     
+            5. Feel free also to take a look on Prometheus - [Prometheus Metrics](https://e1250-tracking-system-backend.hf.space/metrics/)  
             """
         )
 
