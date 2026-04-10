@@ -59,7 +59,6 @@ async def lifespan(app: FastAPI):
     safety_detection_path = hf_fetch_model(
         repo_id="e1250/safety_detection",
         filename=settings.security_detector.model_name,
-        cache_dir=settings.hf_cache_dir,
     )
     app.state.safety_detection_model = YOLO_Detector(safety_detection_path)
 
