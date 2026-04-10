@@ -9,7 +9,6 @@ from api.routers import health
 from infra.logger_structlog import StructLogger
 
 from contextlib import asynccontextmanager
-import os
 import mlflow
 import torch
 import redis.asyncio as aioredis
@@ -18,9 +17,9 @@ import dagshub
 from fastapi import FastAPI
 
 
-settings = AppConfig()
-if settings.dagshub_user_token:
-    os.environ["DAGSHUB_USER_TOKEN"] = settings.dagshub_user_token
+# settings = AppConfig()
+# if settings.dagshub_user_token:
+#     os.environ["DAGSHUB_USER_TOKEN"] = settings.dagshub_user_token
 
 
 @asynccontextmanager
@@ -28,7 +27,7 @@ async def lifespan(app: FastAPI):
     """
     This is on_event("startup") new alternative, Make sure you load models here.
     """
-
+    settings = AppConfig()
     logger = StructLogger(settings=settings)
     # Using this way to can store data. it is acts as a dict which holds instances
     app.state.logger = logger
@@ -41,14 +40,12 @@ async def lifespan(app: FastAPI):
     detection_model_path = hf_fetch_model(
         repo_id="Ultralytics/YOLO26",
         filename=settings.yolo.model_name,
-        cache_dir=settings.hf_cache_dir,
     )
     app.state.detection_model = YOLO_Detector(detection_model_path)
 
     depth_model_path = hf_fetch_model(
         repo_id="depth-anything/Depth-Anything-V2-Small",
         filename=settings.depth.model_name,
-        cache_dir=settings.hf_cache_dir,
     )
     app.state.depth_model = DepthAnything(
         encoder=settings.depth.encoder,
