@@ -2,10 +2,9 @@
 # This file is being used mostly in HTTP and not websockets.
 # Health check is being used for example by docker, to check is dependencies are working fine, if not, he might restart.
 
-from requests import Request
 from http import HTTPStatus
 from datetime import datetime
-from fastapi import APIRouter, Response
+from fastapi import APIRouter, Response, Request
 
 from api.routers.metrics import active_cameras
 
