@@ -33,6 +33,8 @@ with gr.Blocks() as demo:
             3. Open Gradio, Make sure you add the same `camera_id`, upload an image, then click send
             4. Go back into the dashboard, Give it couple of seconds (Due to HF env limitation - CPU). then see the updates     
             5. Feel free also to take a look on Prometheus - [Prometheus Metrics](https://e1250-tracking-system-backend.hf.space/metrics/)  
+            ---
+            - [Github Repo](https://github.com/E1250/p-tracking_system)
             """
         )
 
