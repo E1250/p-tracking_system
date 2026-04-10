@@ -1,3 +1,5 @@
+from backend.utils.profiling import profile_step
+from backend.services.pipeline import ProcessingPipeline
 from domain.detection_box_center import calculate_detection_box_center
 from api.dependencies import get_safety_detection_model
 from api.dependencies import get_detection_model, get_depth_model
@@ -52,8 +54,9 @@ async def websocket_detect(
     logger.info(f"Client ID >>{camera_id}<< Connected...")
 
     step_counter = itertools.count()
+    pipeline = ProcessingPipeline(detector, depth_model, safety_detector, redis)
 
-    loop = asyncio.get_running_loop()
+
     # Queue removing old images in case they were being stacked
     frame_queue: asyncio.Queue = asyncio.Queue(maxsize=1)
 
@@ -78,106 +81,21 @@ async def websocket_detect(
         try:
             logger.info(f"Camera {camera_id} start sending frames...")
 
-            def decode_frame(fb):
-                return cv.imdecode(np.frombuffer(fb, np.uint8), cv.IMREAD_COLOR)
-
             # Keep receiving messages in a loop until disconnection.
             while True:
                 frame_bytes = await frame_queue.get()
 
-                # Profiling
-                t0 = time.time()
-                image_array = await loop.run_in_executor(
-                    None, decode_frame, frame_bytes
-                )
-                decode_duration_seconds.labels(camera_id).observe(
-                    round(time.time() - t0, 3)
-                )
-                mlflow.log_metric(
-                    "frame_processing_time",
-                    round(time.time() - t0, 3),
-                    next(step_counter),
-                )
 
-                # Apply detection models
-                t0 = time.time()
-                detection_task = loop.run_in_executor(
-                    None, detector.detect, image_array
-                )
-                safety_task = loop.run_in_executor(
-                    None, safety_detector.detect, image_array
-                )
-                detections, safety_detection = await asyncio.gather(
-                    detection_task, safety_task
-                )
-                detection_duration_seconds.labels(camera_id).observe(
-                    round(time.time() - t0, 3)
-                )
-                mlflow.log_metric(
-                    "detection_duration_seconds",
-                    round(time.time() - t0, 3),
-                    next(step_counter),
-                )
-
-                # Profiling
-                frame_processing_duration_seconds.labels(camera_id).observe(
-                    round(time.time() - t0, 3)
-                )
-                logger.debug("Frame processed", camera_id=camera_id)
-                mlflow.log_metric(
-                    "frame_processing duration time",
-                    round(time.time() - t0, 3),
-                    next(step_counter),
-                )
-
-                boxes_center, boxes_center_ratio = calculate_detection_box_center(detections.detections, image_array.shape[1])
-
-                t0 = time.time()
-                depth_points = (
-                    await loop.run_in_executor(
-                        None, depth_model.calculate_depth, image_array, boxes_center
-                    )
-                    if boxes_center
-                    else []
-                )
-                depth_duration_seconds.labels(camera_id).observe(
-                    round(time.time() - t0, 3)
-                )
-                mlflow.log_metric(
-                    "depth_duration_seconds",
-                    round(time.time() - t0, 3),
-                    next(step_counter),
-                )
-
-                detection_metadata = [
-                    DetectionMetadata(depth=depth, xRatio=xRatio)
-                    for depth, xRatio in zip(depth_points, boxes_center_ratio)
-                ]
-                metadata = CameraMetadata(
-                    camera_id=camera_id,
-                    is_danger=True if safety_detection else False,
-                    detection_metadata=detection_metadata,
-                )
-
-                await redis.publish("dashboard_stream", metadata.model_dump_json())
-                # Even if the camera was disconnected, redis is still going to show its data, which is not accurate.
-                # Instead, we set expiry date for the camera data.
-                await redis.setex(
-                    f"camera:{camera_id}:latest",  # And this is the key, or tag
-                    10,  # in seconds
-                    metadata.model_dump_json(),
-                )
+                results = await pipeline.run(camera_id, frame_bytes, next(step_counter))
 
                 # Note that JSONResponse doesn't work here, as it is for HTTP
-                await websocket.send_json({"status": 200, "camera_id": camera_id})
+                await websocket.send_json(results)
 
         except Exception as e:
             logger.error(f"Processing Error: {e}", camera_id=camera_id)
             raise
 
-    with mlflow.start_run(
-        run_name=f"camera_{camera_id}", nested=True, parent_run_id=state.mlflow_run_id
-    ):
+    with mlflow.start_run(run_name=f"camera_{camera_id}", nested=True, parent_run_id=state.mlflow_run_id):
         log_config()
 
         try:

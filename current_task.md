@@ -1,3 +1,66 @@
+# 🚀 Project Roadmap: The Path to Production
+
+This document outlines the critical "missing pieces" to elevate the **Tracking Dashboard** from a prototype to a senior-level production system.
+
+## 🏗️ 1. Clean Architecture & Refactoring
+**Status:** 🟠 In Progress
+**Why?** Decoupling logic allows you to upgrade AI models or change your DB without breaking everything.
+
+- [ ] **Implement `ProcessingPipeline`**: Move the logic from `camera_stream.py` to `backend/services/pipeline.py`.
+- [ ] **Dependency Injection**: Pass model instances into the pipeline instead of reaching into `app.state`.
+- [ ] **Error Boundaries**: Create custom exceptions (e.g., `InferenceError`, `DecodingError`) to handle failures gracefully.
+
+## 🧪 2. Robust Testing (Priority)
+**Status:** 🔴 Missing
+**Why?** You can't scale what you can't verify.
+
+- [ ] **Unit Tests**: Test the `calculate_detection_box_center` and other utility functions.
+- [ ] **Mocked Model Tests**:
+  ```python
+  def test_pipeline_with_mock_ai():
+      mock_detector = MagicMock()
+      mock_detector.detect.return_value = FakeDetections()
+      # ... verify the pipeline still works without a real GPU
+  ```
+- [ ] **Integration Test**: Full flow from WebSocket input to Redis output.
+- [ ] **Load Testing**: Use **Locust** to benchmark the system's capacity.
+
+## 🔒 3. Security & Resilience
+**Status:** 🔴 Missing
+**Why?** Prevents unauthorized access and system crashes.
+
+- [ ] **Auth Middleware**: Protect `/detectors/stream` with an API Key.
+- [ ] **Circuit Breakers**: If Redis is down, the system should log the error but not crash the entire app.
+- [ ] **Client Heartbeats**: Implement "ping/pong" to clean up dead connections faster.
+
+## 📊 4. Observability
+**Status:** 🟠 Partially Implemented
+**Why?** "If you can't measure it, you can't improve it."
+
+- [ ] **Grafana Dashboard**: Create a dashboard visualization for your current Prometheus metrics.
+- [ ] **Alerting Service**: A simple service that triggers a Slack/Discord webhook when `is_danger` is True for > 5 seconds.
+- [ ] **Structured Trace Log**: Link frame IDs across the system to see exactly where a specific frame was delayed.
+
+## 🐳 5. DevOps & CI/CD
+**Status:** 🔴 Missing
+**Why?** Automates the boring stuff so you can focus on code.
+
+- [ ] **GitHub Actions**: Add a workflow to run `ruff` and `pytest` on every PR.
+- [ ] **Docker Optimization**: Use multi-stage builds to reduce the Docker image size.
+
+## 📖 6. Documentation
+**Status:** 🟠 Basic
+**Why?** Essential for your portfolio. Recruiters look for how you explain complex systems.
+
+- [ ] **Mermaid Diagrams**: Add a "Data Flow Diagram" to your README.
+- [ ] **API Documentation**: Polish the FastAPI Swagger descriptions with clear examples.
+
+
+
+
+
+
+
 - For tasks.md, it is kinda alternate to `Trello` and agile for project management, I plan to keep using Github Issues and ``todo` file. 
 - I would prefer using `env.yml` rather than req.txt in my case.
 - fb16 has been added, it takes lower memory and get the same accuracy.
