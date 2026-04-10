@@ -1,4 +1,4 @@
-from backend.domain.detection_box_center import calculate_detection_box_center
+from domain.detection_box_center import calculate_detection_box_center
 from api.dependencies import get_safety_detection_model
 from api.dependencies import get_detection_model, get_depth_model
 import asyncio

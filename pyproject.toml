@@ -35,7 +35,6 @@ dev = [
     "mkdocs",
     "mkdocstrings[python]",
     "pre-commit"
-
 ]
 
 [tool.hatch.build.targets.wheel]
