@@ -80,3 +80,5 @@ lastly i faced an issue that was driving me crazy, the dashboard was working rea
 after using redis, the structure of the output changed, then parsing on dashboard end was wronly, but with no error messages at all. 
 
 Overall, ai is really great giving feedback, but for some and ciritical cases, it was not that helpful, mostly i still had to debug myself and check where is the issue. 
+
+as a last way of testing, i also created a gradio demo, so anybody can upload the image, and test it direcly on the vercel dashobard.
