@@ -1,15 +1,33 @@
 name: Deploy Tracking System Backend to HF
 
 # Trigger - When you push files in branch main, and the files being added to backend folder.
-on: 
+on:
   push:
     branches: [main]
-    paths: 
+    paths:
       - "backend/**"
 
 # Job - the machine or env to run this code.
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install pytest pytest-asyncio numpy pydantic opencv-python
+
+      - name: Run unit test
+        run: pytest tests/unit
+
   deploy:
+    needs: test # Defined previously
     runs-on: ubuntu-latest
 
     # steps - Download repo code into machine to work with.
@@ -17,10 +35,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0   # - fetch full git history
-      
+          fetch-depth: 0 # - fetch full git history
+
       - name: Push backend to HF
-        env: 
+        env:
           HF_TOKEN: ${{secrets.HF_TOKEN}}
 
         run: |
