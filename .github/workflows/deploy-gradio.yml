@@ -13,11 +13,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch_depth: 0  # Fetch full git
+          fetch-depth: 0  # Fetch full git
 
       - name: Push gradio to HF 
         env:
-          HF_TOKEN: ${{secrets.HT_TOKEN}}
+          HF_TOKEN: ${{secrets.HF_TOKEN}}
         run: |
           git config --global user.email "deploy@github.com"
           git config --global user.name "Github Actions"
