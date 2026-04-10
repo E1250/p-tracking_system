@@ -1,5 +1,5 @@
 from ai.detectors.yolo_detector import YOLO_Detector
-from app.config import AppConfig
+from backend.config.settings import AppConfig
 from ultralytics.utils.plotting import Annotator
 import cv2 as cv
 from ai.utils.hugging_face import hf_fetch_model

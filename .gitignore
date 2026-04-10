@@ -10,8 +10,8 @@ playground*
 # Temps
 .qodo
 .ruff_cache
-*/__pycache__
 .cache
+__pycache__
 
 # Security
 .env

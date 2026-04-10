@@ -85,8 +85,12 @@ async def websocket_detect(
             while True:
                 frame_bytes = await frame_queue.get()
 
-
-                results = await pipeline.run(camera_id, frame_bytes, next(step_counter))
+                try:
+                    results = await pipeline.run(camera_id, frame_bytes, next(step_counter))
+                except Exception as e:
+                    logger.warn(f"Error happened while processing a frame in {camera_id}: {e}")
+                    logger.exception(e)
+                    continue
 
                 # Note that JSONResponse doesn't work here, as it is for HTTP
                 await websocket.send_json(results)
